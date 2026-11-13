@@ -1,0 +1,3004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Bhonsle Family Voice-First Travel & Cab Sahayak — Speak to Book Uber, Ola, Rapido, GoaMiles, Trains & Flights</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --base-scale: 1;
+    }
+    body {
+      font-family: 'Inter', 'Noto Sans Devanagari', sans-serif;
+      background-color: #F8FAFC;
+      color: #0F172A;
+      overflow-x: hidden;
+    }
+    .scale-normal { font-size: 16px; }
+    .scale-large { font-size: 18.5px; }
+    .scale-xlarge { font-size: 21px; }
+    .tap-card {
+      transition: transform 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease;
+    }
+    .tap-card:active {
+      transform: scale(0.98);
+    }
+    .selected-ring {
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.35);
+    }
+    @keyframes micPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7), 0 0 0 12px rgba(245, 158, 11, 0.2); }
+      50% { box-shadow: 0 0 0 12px rgba(245, 158, 11, 0.35), 0 0 0 24px rgba(245, 158, 11, 0); }
+    }
+    .mic-listening {
+      animation: micPulse 1.4s infinite;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body id="appBody" class="scale-normal min-h-screen flex flex-col justify-between pb-28">
+
+  <!-- TOP STICKY ACCESSIBILITY & FAMILY HEADER -->
+  <header class="sticky top-0 z-40 bg-slate-900 text-white shadow-lg border-b border-slate-700">
+    <div class="max-w-5xl mx-auto px-3 sm:px-5 py-3">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <!-- Brand Title -->
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center font-extrabold text-xl shadow-md">
+            ॐ
+          </div>
+          <div>
+            <h1 id="headerTitle" class="font-extrabold text-lg sm:text-xl tracking-tight leading-tight">
+              Bhonsle Family Voice Travel Sahayak
+            </h1>
+            <p id="headerSubtitle" class="text-xs sm:text-sm text-amber-300 font-medium">
+              Speak to Book • Uber, Ola, Rapido, GoaMiles, Trains &amp; Flights
+            </p>
+          </div>
+        </div>
+
+        <!-- Language, Voice & Font Controls -->
+        <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+          <div class="inline-flex rounded-xl bg-slate-800 p-1 border border-slate-700" role="group" aria-label="Language Selector">
+            <button type="button" id="langBtnEn" onclick="setLanguage('en')" class="px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-amber-400 text-slate-950 transition">
+              EN
+            </button>
+            <button type="button" id="langBtnHi" onclick="setLanguage('hi')" class="px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold text-slate-200 hover:text-white transition">
+              हिंदी
+            </button>
+            <button type="button" id="langBtnMr" onclick="setLanguage('mr')" class="px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold text-slate-200 hover:text-white transition">
+              मराठी
+            </button>
+          </div>
+
+          <button type="button" id="fontSizeBtn" onclick="cycleFontSize()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs sm:text-sm font-bold text-white flex items-center gap-1" title="Increase Text Size for Seniors">
+            <span>🔍</span> <span id="fontSizeLabel">A+</span>
+          </button>
+
+          <button type="button" id="voiceToggleBtn" onclick="toggleVoiceAssist()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow">
+            <span id="voiceIcon">🔊</span>
+            <span id="voiceLabel">Voice: ON</span>
+          </button>
+
+          <button type="button" id="seniorSimpleBtn" onclick="toggleSeniorSimpleMode()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs sm:text-sm font-bold text-amber-300 flex items-center gap-1" title="Ultra-Simple View for Ajoba & Aaji">
+            <span>👴</span> <span id="seniorSimpleLabel">Senior Mode: OFF</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- WHO IS TRAVELING BAR -->
+      <div class="mt-3 pt-2.5 border-t border-slate-800 flex items-center gap-2 overflow-x-auto pb-1">
+        <span id="whoLabel" class="text-xs font-bold uppercase tracking-wider text-slate-400 shrink-0">
+          Who is traveling:
+        </span>
+        <div id="travelerPills" class="flex items-center gap-2">
+          <!-- Populated dynamically by JS -->
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================
+       SPEAK-TO-EXECUTE VOICE COMMAND CENTER (ALWAYS ACCESSIBLE)
+       ======================================================== -->
+  <section class="bg-gradient-to-b from-slate-900 via-indigo-950 to-slate-900 text-white border-b-4 border-amber-400 shadow-xl">
+    <div class="max-w-5xl mx-auto px-3 sm:px-5 py-4 sm:py-5">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <!-- Left Description -->
+        <div class="space-y-1.5 text-center md:text-left flex-1">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-xs font-extrabold uppercase tracking-wider">
+            <span>🎙️</span>
+            <span id="voiceBadgeText">Hands-Free Voice Execution • English, हिंदी &amp; मराठी</span>
+          </div>
+          <h2 id="voiceCenterTitle" class="text-xl sm:text-2xl font-black tracking-tight">
+            Just Tap the Mic &amp; Speak — The App Will Execute It!
+          </h2>
+          <p id="voiceCenterSubtitle" class="text-xs sm:text-sm text-slate-300">
+            Say where you want to go or what ticket you need. It automatically sets the route &amp; opens Uber, Ola, Rapido, GoaMiles, ConfirmTkt, or MakeMyTrip!
+          </p>
+        </div>
+
+        <!-- Big Pulsing Speak-to-Execute Button -->
+        <div class="flex flex-col items-center shrink-0 w-full md:w-auto">
+          <button type="button" id="heroMicBtn" onclick="startGlobalVoiceCommand()" class="tap-card w-full md:w-auto px-7 py-4 rounded-3xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-base sm:text-lg shadow-xl flex items-center justify-center gap-3 border-4 border-white/20">
+            <span id="heroMicIcon" class="text-3xl">🎙️</span>
+            <div class="text-left leading-tight">
+              <span id="heroMicMainText" class="block font-black text-base sm:text-lg">TAP &amp; SPEAK COMMAND</span>
+              <span id="heroMicSubText" class="block text-xs font-bold text-slate-800">bolkar book karein / बोलून बुक करा</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Voice Transcript & Instant Test Voice Chips -->
+      <div class="mt-4 pt-3 border-t border-slate-800/90 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+        <div class="flex-1 flex items-center gap-2 bg-slate-800/90 border border-slate-700 rounded-2xl px-3.5 py-2">
+          <span class="text-amber-400 text-lg shrink-0">🗣️</span>
+          <input id="voiceCommandInput" type="text" onkeydown="if(event.key==='Enter'){runManualVoiceCommand()}" placeholder="Speak with mic OR type a command here (e.g. 'Book Uber Auto to Dhanshri Salon')..." class="w-full bg-transparent text-white placeholder-slate-400 text-xs sm:text-sm font-semibold focus:outline-none" />
+          <button type="button" onclick="runManualVoiceCommand()" class="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs shrink-0">
+            Execute ➔
+          </button>
+        </div>
+      </div>
+
+      <!-- One-Tap Sample Voice Commands (For Instant Testing & Seniors) -->
+      <div class="mt-2.5 flex items-center gap-1.5 overflow-x-auto pb-1">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 shrink-0">Try Voice Command:</span>
+        <button type="button" onclick="simulateSpokenCommand('Check cheapest price across Uber Ola Rapido to Oberoi Sky City')" class="shrink-0 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 text-xs font-bold">
+          🗣️ "Check cheapest to Oberoi Sky City"
+        </button>
+        <button type="button" onclick="simulateSpokenCommand('Book Uber Auto to Dhanshri Salon')" class="shrink-0 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 text-xs font-bold">
+          🗣️ "Book Uber Auto to Dhanshri Salon"
+        </button>
+        <button type="button" onclick="simulateSpokenCommand('मुझे भक्तिवेदांत हॉस्पिटल जाना है ओला बुक करो')" class="shrink-0 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700 text-xs font-bold">
+          🗣️ "भक्तिवेदांत हॉस्पिटल जाना है ओला बुक करो"
+        </button>
+        <button type="button" onclick="simulateSpokenCommand('Book GoaMiles taxi to Divya Home Mapusa')" class="shrink-0 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-teal-300 border border-slate-700 text-xs font-bold">
+          🗣️ "Book GoaMiles to Divya Home Mapusa"
+        </button>
+        <button type="button" onclick="simulateSpokenCommand('Book Vande Bharat train to Goa Thivim tomorrow')" class="shrink-0 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-sky-300 border border-slate-700 text-xs font-bold">
+          🗣️ "Vande Bharat train to Goa Thivim"
+        </button>
+        <button type="button" onclick="simulateSpokenCommand('Book flight from Mumbai to Mopa Goa for Mom and Dad')" class="shrink-0 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-purple-300 border border-slate-700 text-xs font-bold">
+          🗣️ "Flight Mumbai to Mopa Goa for Mom &amp; Dad"
+        </button>
+        <button type="button" onclick="simulateSpokenCommand('ओम को बोलो मेरी कैब बुक कर दे')" class="shrink-0 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-rose-300 border border-slate-700 text-xs font-bold">
+          🗣️ "ओम को बोलो मेरी कैब बुक कर दे"
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- VOICE EXECUTION AUTO-LAUNCH MODAL (WITH 3-SECOND COUNTDOWN) -->
+  <div id="voiceExecutionModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border-4 border-amber-400 space-y-4">
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+          <span class="w-11 h-11 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-2xl font-bold">🎙️</span>
+          <div>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-700 block">Voice Command Understood</span>
+            <h3 id="execModalHeardText" class="font-extrabold text-base sm:text-lg text-slate-900">
+              "Book Uber Auto to Dhanshri Salon"
+            </h3>
+          </div>
+        </div>
+        <button type="button" onclick="cancelVoiceExecution()" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm">✕</button>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-blue-50 border-2 border-blue-200 space-y-1.5">
+        <div class="text-xs font-extrabold uppercase text-blue-800" id="execModalTypeBadge">EXECUTING TASK AUTOMATICALLY</div>
+        <p id="execModalActionSummary" class="font-black text-lg sm:text-xl text-slate-900">
+          Opening Uber with Pickup: Current Location ➔ Drop: Dhanshri Beauty Salon
+        </p>
+        <p id="execModalSubNote" class="text-xs sm:text-sm text-slate-600">
+          Your destination and GPS coordinates are pre-filled.
+        </p>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="space-y-1.5">
+        <div class="flex items-center justify-between text-xs font-extrabold text-slate-700">
+          <span id="execCountdownLabel">Auto-launching in 2 seconds...</span>
+          <span id="execCountdownPct">100%</span>
+        </div>
+        <div class="w-full h-3 rounded-full bg-slate-200 overflow-hidden">
+          <div id="execProgressBar" class="h-full bg-emerald-600 transition-all duration-300" style="width: 100%"></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 pt-1">
+        <button type="button" onclick="cancelVoiceExecution()" class="tap-card py-3 px-4 rounded-2xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold text-sm sm:text-base">
+          ✋ Cancel
+        </button>
+        <button type="button" id="execNowBtn" onclick="triggerPendingExecutionNow()" class="tap-card py-3 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm sm:text-base shadow-lg">
+          🚀 Launch Right Now ➔
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MULTI-STAGE AI AGENT 3-APP SCANNER & AUTO-BOOKER MODAL -->
+  <div id="agentScannerModal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-slate-900 text-white rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border-4 border-amber-400 space-y-4">
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center text-2xl font-black animate-pulse">
+            🤖
+          </div>
+          <div>
+            <span id="agentBridgeBadge" class="text-[11px] font-extrabold uppercase tracking-wider text-amber-300 block">
+              AI AGENT MULTI-APP SCAN &amp; AUTO-BOOK
+            </span>
+            <h3 id="agentScannerDestTitle" class="font-black text-base sm:text-lg text-white">
+              Scanning 3 Apps ➔ Om's House (Gagangiri Complex)
+            </h3>
+          </div>
+        </div>
+        <button type="button" onclick="stopAgentMultiScan()" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-sm">✕</button>
+      </div>
+
+      <!-- 4-Step Live Pipeline Status -->
+      <div class="space-y-2.5">
+        <div id="scanRowUber" class="p-3 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <span class="w-8 h-8 rounded-xl bg-white text-slate-950 font-black text-xs flex items-center justify-center">Uber</span>
+            <div>
+              <span class="font-bold text-sm block">1. Querying Uber Ride Fare</span>
+              <span id="scanStatusUber" class="text-xs text-slate-400">Waiting...</span>
+            </div>
+          </div>
+          <span id="scanPriceUber" class="font-black text-base text-amber-300">--</span>
+        </div>
+
+        <div id="scanRowOla" class="p-3 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <span class="w-8 h-8 rounded-xl bg-lime-400 text-slate-950 font-black text-xs flex items-center justify-center">OLA</span>
+            <div>
+              <span class="font-bold text-sm block">2. Querying Ola Cabs / Auto</span>
+              <span id="scanStatusOla" class="text-xs text-slate-400">Waiting...</span>
+            </div>
+          </div>
+          <span id="scanPriceOla" class="font-black text-base text-amber-300">--</span>
+        </div>
+
+        <div id="scanRowRapido" class="p-3 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <span class="w-8 h-8 rounded-xl bg-amber-400 text-slate-950 font-black text-[10px] flex items-center justify-center">Rapido</span>
+            <div>
+              <span class="font-bold text-sm block">3. Querying Rapido / GoaMiles</span>
+              <span id="scanStatusRapido" class="text-xs text-slate-400">Waiting...</span>
+            </div>
+          </div>
+          <span id="scanPriceRapido" class="font-black text-base text-amber-300">--</span>
+        </div>
+      </div>
+
+      <!-- Winner Banner -->
+      <div id="agentWinnerBanner" class="p-4 rounded-2xl bg-emerald-950/90 border-2 border-emerald-500 space-y-1">
+        <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-300 block" id="agentStageLabel">
+          STEP 1 OF 4: INITIALIZING AI AGENT...
+        </span>
+        <p id="agentWinnerText" class="font-black text-base sm:text-lg text-white">
+          Checking Uber, Ola &amp; Rapido prices...
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 pt-1">
+        <button type="button" onclick="stopAgentMultiScan()" class="tap-card py-3 px-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-extrabold text-xs sm:text-sm border border-slate-600">
+          ✋ Stop Agent
+        </button>
+        <button type="button" id="agentBookWinnerNowBtn" onclick="executeWinningAppImmediately()" class="tap-card py-3 px-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs sm:text-sm shadow-lg">
+          🚀 Book Cheapest Now ➔
+        </button>
+      </div>
+      <div class="pt-1 border-t border-slate-800 flex items-center justify-between gap-2">
+        <span class="text-[11px] text-slate-400">Using Tasker + AutoInput on Android?</span>
+        <button type="button" onclick="triggerTaskerDeepLinkIntent()" class="px-3 py-1.5 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 border border-amber-400/50 text-amber-300 font-bold text-xs">
+          ⚡ Trigger Tasker Auto-Clicker
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN NAVIGATION TABS -->
+  <nav class="bg-white border-b border-slate-200 shadow-sm sticky top-[108px] sm:top-[104px] z-30">
+    <div class="max-w-5xl mx-auto px-3 sm:px-5 py-2.5 grid grid-cols-4 gap-2">
+      <button type="button" id="tabBtnCabs" onclick="switchTab('cabs')" class="tap-card flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-2xl font-extrabold text-xs sm:text-base border-2 border-blue-600 bg-blue-600 text-white shadow-sm">
+        <span class="text-xl sm:text-2xl">🚕</span>
+        <span id="tabTextCabs">1. Cab &amp; Auto</span>
+      </button>
+      <button type="button" id="tabBtnTrains" onclick="switchTab('trains')" class="tap-card flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-2xl font-extrabold text-xs sm:text-base border-2 border-slate-200 bg-slate-50 text-slate-800 hover:bg-slate-100">
+        <span class="text-xl sm:text-2xl">🚆</span>
+        <span id="tabTextTrains">2. Trains</span>
+      </button>
+      <button type="button" id="tabBtnFlights" onclick="switchTab('flights')" class="tap-card flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-2xl font-extrabold text-xs sm:text-base border-2 border-slate-200 bg-slate-50 text-slate-800 hover:bg-slate-100">
+        <span class="text-xl sm:text-2xl">✈️</span>
+        <span id="tabTextFlights">3. Flights</span>
+      </button>
+      <button type="button" id="tabBtnSetup" onclick="switchTab('setup')" class="tap-card flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-2xl font-extrabold text-xs sm:text-base border-2 border-slate-200 bg-slate-50 text-slate-800 hover:bg-slate-100">
+        <span class="text-xl sm:text-2xl">⚙️</span>
+        <span id="tabTextSetup">4. Saved Places</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- STATUS / VOICE BANNER -->
+  <div id="toastBanner" class="hidden max-w-5xl mx-auto px-3 sm:px-5 mt-3">
+    <div class="bg-emerald-900 text-white px-4 py-3 rounded-2xl shadow-md flex items-center justify-between gap-3 border border-emerald-600">
+      <div class="flex items-center gap-2.5">
+        <span class="text-2xl">✅</span>
+        <p id="toastMessage" class="font-bold text-sm sm:text-base"></p>
+      </div>
+      <button type="button" onclick="hideToast()" class="px-2.5 py-1 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-xs font-bold">
+        OK
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="max-w-5xl mx-auto w-full px-3 sm:px-5 py-5 space-y-6 flex-1">
+
+    <!-- ==========================================
+         VIEW 1: CAB & AUTO 1-TAP LAUNCHER
+         ========================================== -->
+    <section id="viewCabs" class="space-y-6">
+      <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white rounded-3xl p-4 sm:p-6 shadow-md border border-blue-700">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <span id="cabBadge" class="inline-block px-3 py-1 rounded-full bg-amber-400 text-slate-950 font-extrabold text-xs uppercase tracking-wider">
+              Mumbai (Uber, Ola, Rapido) &amp; Goa (GoaMiles)
+            </span>
+            <h2 id="cabHeroTitle" class="text-xl sm:text-2xl font-extrabold mt-1">
+              Speak Your Destination OR Tap a Card Below!
+            </h2>
+            <p id="cabHeroDesc" class="text-slate-200 text-sm sm:text-base">
+              Pick your destination card below, then tap Uber, Ola, Rapido, GoaMiles, or Ask Om.
+            </p>
+          </div>
+          <button type="button" onclick="speakCurrentScreenGuide('cabs')" class="tap-card shrink-0 px-4 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 shadow-md">
+            <span>🔊</span>
+            <span id="btnReadInstructions">Hear Instructions</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 1: PICKUP POINT BAR -->
+      <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border-2 border-slate-200">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-8 h-8 rounded-full bg-emerald-600 text-white font-extrabold flex items-center justify-center text-sm">1</span>
+            <h3 id="pickupHeading" class="font-extrabold text-base sm:text-lg text-slate-900">
+              Pickup Location (Where are you right now?)
+            </h3>
+          </div>
+          <button type="button" onclick="detectLiveGPS()" class="tap-card px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-xs sm:text-sm flex items-center gap-1.5">
+            <span>📍</span>
+            <span id="btnUseMyGps">Detect Live GPS</span>
+          </button>
+        </div>
+
+        <div id="pickupOptionsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <!-- Populated dynamically by JS -->
+        </div>
+        <p id="gpsStatusText" class="mt-2.5 text-xs sm:text-sm font-medium text-slate-600">
+          Current Pickup: <strong class="text-slate-900">My Current Phone GPS Location (Automatic)</strong>
+        </p>
+      </div>
+
+      <!-- STEP 2: DESTINATION CARDS (BIG VISUAL BUTTONS) -->
+      <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border-2 border-slate-200">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+          <div class="flex items-center gap-2">
+            <span class="w-8 h-8 rounded-full bg-blue-600 text-white font-extrabold flex items-center justify-center text-sm">2</span>
+            <h3 id="dropHeading" class="font-extrabold text-base sm:text-lg text-slate-900">
+              Where do you want to go? (Tap one card)
+            </h3>
+          </div>
+          <div class="flex flex-wrap items-center gap-1.5">
+            <button type="button" id="filterCityAll" onclick="filterPlaces('all')" class="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-slate-900 text-white">All</button>
+            <button type="button" id="filterCityMumbai" onclick="filterPlaces('Mumbai')" class="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-slate-100 text-slate-700 hover:bg-slate-200">Mumbai</button>
+            <button type="button" id="filterCityGoa" onclick="filterPlaces('Goa')" class="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-amber-100 text-amber-900 hover:bg-amber-200">Goa</button>
+            <button type="button" onclick="openPlaceModal()" class="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100">+ Add Place</button>
+          </div>
+        </div>
+
+        <div id="destinationCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Custom Search Input for Any Other Destination -->
+        <div class="mt-4 pt-4 border-t border-slate-200">
+          <label for="customDropInput" id="customDropLabel" class="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">
+            Going somewhere else? Type or speak any place name in Mumbai or Goa:
+          </label>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input id="customDropInput" type="text" oninput="handleCustomDestinationInput(this.value)" placeholder="e.g. Maxus Mall Mira Road, Panjim Bus Stand, Calangute..." class="flex-1 px-4 py-3 rounded-xl border-2 border-slate-300 focus:border-blue-600 focus:outline-none font-semibold text-slate-900" />
+            <button type="button" onclick="startVoiceDictation('customDropInput')" class="tap-card px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-sm flex items-center justify-center gap-2 border border-slate-300">
+              <span>🎤</span> <span>Speak Place</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: RIDE CATEGORY & ACTION LAUNCHERS (UBER / OLA / RAPIDO / GOAMILES / WHATSAPP) -->
+      <div class="bg-white rounded-3xl p-4 sm:p-6 shadow-md border-2 border-blue-600 space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
+          <div class="flex items-center gap-2.5">
+            <span class="w-8 h-8 rounded-full bg-amber-400 text-slate-950 font-extrabold flex items-center justify-center text-sm">3</span>
+            <div>
+              <h3 id="launchHeading" class="font-extrabold text-lg sm:text-xl text-slate-900">
+                Tap Your Preferred App to Book Ride
+              </h3>
+              <p id="selectedRouteSummary" class="text-sm font-bold text-blue-700">
+                Pickup: My Current Location ➔ Drop: Dhanshri Beauty Salon (Mira Road)
+              </p>
+            </div>
+          </div>
+
+          <!-- Vehicle Preference Pill -->
+          <div class="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+            <button type="button" id="vehAuto" onclick="setVehicleType('auto')" class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-extrabold bg-amber-400 text-slate-950 shadow-sm">
+              🛺 Auto
+            </button>
+            <button type="button" id="vehCab" onclick="setVehicleType('cab')" class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-extrabold text-slate-700 hover:bg-white">
+              🚗 AC Cab (Mini/Sedan)
+            </button>
+            <button type="button" id="vehXl" onclick="setVehicleType('xl')" class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-extrabold text-slate-700 hover:bg-white">
+              🚙 Family SUV (6-Seat)
+            </button>
+          </div>
+        </div>
+
+        <!-- GOAMILES HIGHLIGHT BANNER WHEN IN GOA OR GOA DESTINATION SELECTED -->
+        <div id="goaMilesCardContainer" class="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-teal-900 via-cyan-900 to-slate-900 text-white border-2 border-teal-400 shadow-lg space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5">
+              <span class="px-2.5 py-1 rounded-lg bg-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider">
+                🌴 Official Goa Taxi App (GTDC)
+              </span>
+              <span id="goaActiveBadge" class="text-xs font-bold text-teal-200">
+                Best for Mapusa (Divya Home), Thivim Station, Mopa (GOX) &amp; Dabolim (GOI)
+              </span>
+            </div>
+            <a href="https://www.goamiles.com/" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-teal-300 underline">
+              goamiles.com ↗
+            </a>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <!-- Open GoaMiles App with Auto-Copied Destination -->
+            <button type="button" onclick="launchGoaMilesWithCopy()" class="tap-card p-4 rounded-2xl bg-teal-400 hover:bg-teal-300 text-slate-950 flex items-center justify-between gap-3 shadow-md font-extrabold text-left">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-slate-950 text-teal-400 font-black text-xs flex flex-col items-center justify-center shrink-0 leading-none">
+                  <span>GOA</span>
+                  <span class="text-[10px]">MILES</span>
+                </div>
+                <div>
+                  <span class="text-base sm:text-lg block font-black">Open GoaMiles App</span>
+                  <span class="text-xs text-slate-800 font-semibold block">
+                    Copies destination automatically &amp; launches GoaMiles
+                  </span>
+                </div>
+              </div>
+              <span class="text-xl font-black">📋➔</span>
+            </button>
+
+            <!-- Call GoaMiles 24x7 Dispatch Helpline -->
+            <a href="tel:+919607198989" onclick="recordAction('Calling GoaMiles 24x7 Booking and Support Desk')" class="tap-card p-4 rounded-2xl bg-white/10 hover:bg-white/20 border border-teal-400/50 text-white flex items-center justify-between gap-3 shadow-md">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-teal-500 text-slate-950 font-black text-xl flex items-center justify-center shrink-0">
+                  📞
+                </div>
+                <div>
+                  <span class="text-base sm:text-lg block font-extrabold">Call GoaMiles 24x7 Desk</span>
+                  <span class="text-xs text-teal-200 font-medium block">
+                    +91 96071 98989 / 07969154444 (Phone Booking Help)
+                  </span>
+                </div>
+              </div>
+              <span class="text-xl font-bold">➔</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 3-APP ESTIMATED FARE COMPARISON & VOICE DICTATION -->
+        <div id="fareCompareCard" class="p-4 sm:p-5 rounded-2xl bg-slate-50 border-2 border-slate-200 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <span class="text-xs font-extrabold uppercase tracking-wider text-blue-700 block">
+                💰 3-App Fare Estimator (Based on Official MMRTA / GoaMiles Rates)
+              </span>
+              <p id="fareDistanceSummary" class="text-xs sm:text-sm font-bold text-slate-700">
+                Estimated Route Distance: -- km • Tap "Speak Cheapest" to hear &amp; book
+              </p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" onclick="startAgentThreeAppScan()" class="tap-card px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs sm:text-sm flex items-center gap-1.5 shadow">
+                <span>🤖</span>
+                <span>AI Agent: Scan 3 Apps, Speak &amp; Book</span>
+              </button>
+              <button type="button" onclick="compareThreeAppsAndDictate(true)" class="tap-card px-3.5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs sm:text-sm flex items-center gap-1.5 shadow">
+                <span>🔊</span>
+                <span>Speak Cheapest &amp; Book</span>
+              </button>
+            </div>
+          </div>
+          <div id="fareEstimateGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <!-- Populated dynamically by JS -->
+          </div>
+          <p class="text-[11px] text-slate-500">
+            Note: Estimates use official base/per-km tariffs (Auto ₹27 min + ₹18.22/km; Cab ₹33 min + ₹21.90/km + AC). Live surge pricing is only visible inside each app after it opens, because Uber, Ola, and Rapido do not provide public live-price APIs to personal web apps.
+          </p>
+        </div>
+
+        <!-- MUMBAI & ALL-INDIA BIG 4 LAUNCH BUTTONS (UBER / OLA / RAPIDO / WHATSAPP) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <!-- 1. UBER 1-TAP DEEP LINK -->
+          <a id="uberDeepLinkBtn" href="https://m.uber.com/ul/?action=setPickup&pickup=my_location" target="_blank" rel="noopener noreferrer" onclick="recordAction('Uber App Launched with Pre-Filled Dropoff')" class="tap-card p-4 sm:p-5 rounded-2xl bg-slate-950 hover:bg-slate-900 text-white flex items-center justify-between gap-3 shadow-md border-2 border-slate-900">
+            <div class="flex items-center gap-3.5">
+              <div class="w-14 h-14 rounded-2xl bg-white text-slate-950 font-black text-lg flex items-center justify-center shrink-0">
+                Uber
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-extrabold text-base sm:text-lg">Open Uber (Auto-Filled)</span>
+                  <span class="px-2 py-0.5 rounded-md bg-emerald-500 text-slate-950 font-extrabold text-[11px]">1-TAP</span>
+                </div>
+                <p id="uberBtnSub" class="text-xs sm:text-sm text-slate-300 mt-0.5">
+                  Automatically fills pickup &amp; destination in Uber app
+                </p>
+              </div>
+            </div>
+            <span class="text-2xl font-bold">➔</span>
+          </a>
+
+          <!-- 2. OLA CABS 1-TAP DEEP LINK -->
+          <a id="olaDeepLinkBtn" href="https://book.olacabs.com/" target="_blank" rel="noopener noreferrer" onclick="recordAction('Ola Cabs Launched with Coordinates')" class="tap-card p-4 sm:p-5 rounded-2xl bg-lime-400 hover:bg-lime-300 text-slate-950 flex items-center justify-between gap-3 shadow-md border-2 border-lime-500">
+            <div class="flex items-center gap-3.5">
+              <div class="w-14 h-14 rounded-2xl bg-slate-950 text-lime-400 font-black text-lg flex items-center justify-center shrink-0">
+                OLA
+              </div>
+              <div>
+                <span class="font-extrabold text-base sm:text-lg block">Open Ola Cabs / Auto</span>
+                <p id="olaBtnSub" class="text-xs sm:text-sm text-slate-800 font-medium mt-0.5">
+                  Passes GPS coordinates directly to Ola booking screen
+                </p>
+              </div>
+            </div>
+            <span class="text-2xl font-bold">➔</span>
+          </a>
+
+          <!-- 3. RAPIDO SMART CLIPBOARD + LAUNCHER -->
+          <button type="button" onclick="launchRapidoWithCopy()" class="tap-card p-4 sm:p-5 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 flex items-center justify-between gap-3 shadow-md border-2 border-amber-500 text-left">
+            <div class="flex items-center gap-3.5">
+              <div class="w-14 h-14 rounded-2xl bg-slate-950 text-amber-400 font-black text-sm flex items-center justify-center shrink-0">
+                Rapido
+              </div>
+              <div>
+                <span class="font-extrabold text-base sm:text-lg block">Open Rapido (Auto / Cab)</span>
+                <p id="rapidoBtnSub" class="text-xs sm:text-sm text-slate-900 font-medium mt-0.5">
+                  Copies destination address automatically &amp; opens Rapido
+                </p>
+              </div>
+            </div>
+            <span class="text-2xl font-bold">📋➔</span>
+          </button>
+
+          <!-- 4. UBER WHATSAPP CHATBOT (+91 7292000002) -->
+          <a id="uberWhatsappBotBtn" href="https://wa.me/917292000002?text=Hi" target="_blank" rel="noopener noreferrer" onclick="recordAction('Opened Official Uber WhatsApp Booking Bot')" class="tap-card p-4 sm:p-5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-between gap-3 shadow-md border-2 border-emerald-700">
+            <div class="flex items-center gap-3.5">
+              <div class="w-14 h-14 rounded-2xl bg-white text-emerald-700 font-black text-2xl flex items-center justify-center shrink-0">
+                💬
+              </div>
+              <div>
+                <span class="font-extrabold text-base sm:text-lg block">Book Uber on WhatsApp Chat</span>
+                <p id="waBotBtnSub" class="text-xs sm:text-sm text-emerald-50 font-medium mt-0.5">
+                  No extra app needed! Official Uber Bot (+91 7292000002)
+                </p>
+              </div>
+            </div>
+            <span class="text-2xl font-bold">➔</span>
+          </a>
+        </div>
+
+        <!-- REMOTE HELPER: ASK OM TO BOOK THIS CAB -->
+        <div class="pt-3 border-t border-slate-200">
+          <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div class="space-y-0.5">
+              <span class="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-amber-900">
+                <span>👨‍💻</span> <span id="omHelperBadge">Facing Difficulty or App Asking for OTP / Payment?</span>
+              </span>
+              <h4 id="omHelperTitle" class="font-extrabold text-base sm:text-lg text-slate-900">
+                Tap here to send your exact pickup &amp; destination to Om on WhatsApp
+              </h4>
+              <p id="omHelperDesc" class="text-xs sm:text-sm text-slate-700">
+                Om (+91 97694 28745) will receive your live Google Maps pin &amp; 1-click Uber/GoaMiles details, book the ride remotely, and send you the driver OTP.
+              </p>
+            </div>
+            <button type="button" onclick="sendCabRequestToOm()" class="tap-card w-full sm:w-auto shrink-0 px-5 py-3.5 rounded-2xl bg-green-600 hover:bg-green-500 text-white font-extrabold text-sm sm:text-base shadow-md flex items-center justify-center gap-2">
+              <span>📲</span>
+              <span id="btnAskOmCab">Ask Om to Book My Cab</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         VIEW 2: TRAIN BOOKING HUB (MOM & DAD)
+         ========================================== -->
+    <section id="viewTrains" class="hidden space-y-6">
+      <div class="bg-gradient-to-r from-indigo-900 via-blue-900 to-slate-900 text-white rounded-3xl p-4 sm:p-6 shadow-md border border-indigo-700">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <span class="inline-block px-3 py-1 rounded-full bg-amber-400 text-slate-950 font-extrabold text-xs uppercase tracking-wider">
+              Mom &amp; Dad • Konkan Railway &amp; IRCTC Express Hub
+            </span>
+            <h2 id="trainHeroTitle" class="text-xl sm:text-2xl font-extrabold mt-1">
+              1-Tap Train Search &amp; Booking (Mumbai ↔ Goa &amp; All India)
+            </h2>
+            <p id="trainHeroDesc" class="text-slate-200 text-sm sm:text-base">
+              Pre-configured for Thivim (THVM — closest to Mapusa &amp; Divya Home), Karmali, Madgaon, and Mumbai stations.
+            </p>
+          </div>
+          <button type="button" onclick="speakCurrentScreenGuide('trains')" class="tap-card shrink-0 px-4 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 shadow-md">
+            <span>🔊</span>
+            <span>Hear Train Guide</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- QUICK FAMILY TRAIN ROUTE PRESETS -->
+      <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border-2 border-slate-200 space-y-4">
+        <h3 class="font-extrabold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+          <span>⚡</span> <span>Tap a Popular Family Route (or Customize Below)</span>
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+          <button type="button" onclick="setTrainPreset('CSMT', 'THVM')" class="tap-card p-3.5 rounded-2xl border-2 border-blue-600 bg-blue-50 text-left">
+            <span class="text-xs font-extrabold uppercase text-blue-700 block">Divya Home Route</span>
+            <span class="font-extrabold text-sm sm:text-base text-slate-900 block mt-0.5">Mumbai CSMT ➔ Thivim (THVM)</span>
+            <span class="text-xs text-slate-600">Closest station to Mapusa (10 km)</span>
+          </button>
+          <button type="button" onclick="setTrainPreset('THVM', 'CSMT')" class="tap-card p-3.5 rounded-2xl border-2 border-slate-200 hover:border-blue-500 bg-slate-50 text-left">
+            <span class="text-xs font-extrabold uppercase text-emerald-700 block">Return to Mumbai</span>
+            <span class="font-extrabold text-sm sm:text-base text-slate-900 block mt-0.5">Thivim (THVM) ➔ Mumbai CSMT</span>
+            <span class="text-xs text-slate-600">Vande Bharat, Konkan Kanya, Mandovi</span>
+          </button>
+          <button type="button" onclick="setTrainPreset('BSR', 'THVM')" class="tap-card p-3.5 rounded-2xl border-2 border-slate-200 hover:border-blue-500 bg-slate-50 text-left">
+            <span class="text-xs font-extrabold uppercase text-purple-700 block">Near Mira Road</span>
+            <span class="font-extrabold text-sm sm:text-base text-slate-900 block mt-0.5">Vasai Rd (BSR) ➔ Thivim (THVM)</span>
+            <span class="text-xs text-slate-600">Suburban boarding near Mira Road</span>
+          </button>
+          <button type="button" onclick="setTrainPreset('MMCT', 'UJN')" class="tap-card p-3.5 rounded-2xl border-2 border-slate-200 hover:border-blue-500 bg-slate-50 text-left">
+            <span class="text-xs font-extrabold uppercase text-amber-700 block">Family Pilgrimage</span>
+            <span class="font-extrabold text-sm sm:text-base text-slate-900 block mt-0.5">Mumbai (MMCT) ➔ Ujjain (UJN)</span>
+            <span class="text-xs text-slate-600">Avantika Express &amp; overnight trains</span>
+          </button>
+        </div>
+
+        <!-- CUSTOM STATION & DATE CONTROLS -->
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-3 border-t border-slate-200">
+          <div>
+            <label for="trainFromSelect" class="block text-xs font-bold text-slate-700 mb-1">From Station</label>
+            <select id="trainFromSelect" onchange="updateTrainLinks()" class="w-full px-3 py-3 rounded-xl border-2 border-slate-300 font-bold text-slate-900 bg-white">
+              <option value="CSMT">Mumbai CSMT (CSMT)</option>
+              <option value="DR">Dadar Central (DR)</option>
+              <option value="LTT">Lokmanya Tilak (LTT)</option>
+              <option value="PNVL">Panvel (PNVL)</option>
+              <option value="BSR">Vasai Road (BSR - Near Mira Rd)</option>
+              <option value="BVI">Borivali (BVI)</option>
+              <option value="MMCT">Mumbai Central (MMCT)</option>
+              <option value="THVM">Thivim - North Goa (THVM)</option>
+              <option value="KRMI">Karmali - Panaji Goa (KRMI)</option>
+              <option value="MAO">Madgaon Jn - Goa (MAO)</option>
+              <option value="UJN">Ujjain Jn (UJN)</option>
+            </select>
+          </div>
+          <div>
+            <label for="trainToSelect" class="block text-xs font-bold text-slate-700 mb-1">To Station</label>
+            <select id="trainToSelect" onchange="updateTrainLinks()" class="w-full px-3 py-3 rounded-xl border-2 border-slate-300 font-bold text-slate-900 bg-white">
+              <option value="THVM" selected>Thivim - Mapusa/North Goa (THVM)</option>
+              <option value="KRMI">Karmali - Old Goa/Panaji (KRMI)</option>
+              <option value="MAO">Madgaon Jn - Goa (MAO)</option>
+              <option value="CSMT">Mumbai CSMT (CSMT)</option>
+              <option value="DR">Dadar Central (DR)</option>
+              <option value="LTT">Lokmanya Tilak (LTT)</option>
+              <option value="PNVL">Panvel (PNVL)</option>
+              <option value="BSR">Vasai Road (BSR)</option>
+              <option value="UJN">Ujjain Jn (UJN)</option>
+            </select>
+          </div>
+          <div>
+            <label for="trainDateInput" class="block text-xs font-bold text-slate-700 mb-1">Journey Date</label>
+            <input id="trainDateInput" type="date" onchange="updateTrainLinks()" class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-300 font-bold text-slate-900 bg-white" />
+          </div>
+          <div>
+            <label for="trainClassSelect" class="block text-xs font-bold text-slate-700 mb-1">Coach &amp; Berth Preference</label>
+            <select id="trainClassSelect" onchange="updateTrainLinks()" class="w-full px-3 py-3 rounded-xl border-2 border-slate-300 font-bold text-slate-900 bg-white">
+              <option value="3A - Lower Berth Preferred">3AC (3A) — Lower Berth</option>
+              <option value="2A - Lower Berth Preferred">2AC (2A) — Lower Berth</option>
+              <option value="CC - Vande Bharat / Jan Shatabdi">AC Chair Car (CC / Vistadome)</option>
+              <option value="EC - Executive Chair Car">Executive Chair Car (EC / EV)</option>
+              <option value="SL - Sleeper Lower Berth">Sleeper (SL) — Lower Berth</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 1-TAP TRAIN BOOKING LAUNCHERS -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3">
+          <a id="confirmTktLink" href="https://www.confirmtkt.com/trains/mumbai-to-goa-train-tickets" target="_blank" rel="noopener noreferrer" onclick="recordAction('Opened ConfirmTkt Train Search')" class="tap-card p-4 rounded-2xl bg-emerald-700 hover:bg-emerald-600 text-white flex items-center justify-between shadow-md">
+            <div>
+              <span class="text-xs font-extrabold uppercase bg-amber-400 text-slate-950 px-2 py-0.5 rounded">Easiest for Parents</span>
+              <span class="font-extrabold text-base sm:text-lg block mt-1">Open ConfirmTkt</span>
+              <span class="text-xs text-emerald-100">Shows confirmed seat options &amp; easy UPI</span>
+            </div>
+            <span class="text-2xl font-bold">➔</span>
+          </a>
+
+          <a id="ixigoTrainLink" href="https://www.ixigo.com/by-train-rail/mumbai-to-goa-by-train" target="_blank" rel="noopener noreferrer" onclick="recordAction('Opened ixigo Train Search')" class="tap-card p-4 rounded-2xl bg-orange-600 hover:bg-orange-500 text-white flex items-center justify-between shadow-md">
+            <div>
+              <span class="text-xs font-extrabold uppercase bg-white/20 px-2 py-0.5 rounded">Authorized IRCTC Partner</span>
+              <span class="font-extrabold text-base sm:text-lg block mt-1">Open ixigo Trains</span>
+              <span class="text-xs text-orange-100">Live running status &amp; seat availability</span>
+            </div>
+            <span class="text-2xl font-bold">➔</span>
+          </a>
+
+          <a id="askDishaLink" href="https://revamp.irctc.corover.ai/" target="_blank" rel="noopener noreferrer" onclick="recordAction('Opened IRCTC AskDISHA 2.0 Voice AI')" class="tap-card p-4 rounded-2xl bg-blue-800 hover:bg-blue-700 text-white flex items-center justify-between shadow-md">
+            <div>
+              <span class="text-xs font-extrabold uppercase bg-amber-300 text-slate-950 px-2 py-0.5 rounded">Voice Booking AI</span>
+              <span class="font-extrabold text-base sm:text-lg block mt-1">IRCTC AskDISHA 2.0</span>
+              <span class="text-xs text-blue-100">Book tickets by speaking in Hindi/English</span>
+            </div>
+            <span class="text-2xl font-bold">🎤➔</span>
+          </a>
+        </div>
+
+        <!-- Ask Om to Book Train Ticket -->
+        <div class="pt-2">
+          <button type="button" onclick="sendTrainRequestToOm()" class="tap-card w-full py-3.5 px-4 rounded-2xl bg-green-600 hover:bg-green-500 text-white font-extrabold text-sm sm:text-base shadow flex items-center justify-center gap-2">
+            <span>📲</span>
+            <span>Send This Train &amp; Date to Om on WhatsApp (Om Will Book IRCTC Ticket)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- GROUNDED MUMBAI ↔ GOA KONKAN RAILWAY TIMETABLE REFERENCE -->
+      <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border-2 border-slate-200 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3 class="font-extrabold text-base sm:text-lg text-slate-900">
+              📋 Verified Mumbai ↔ Goa Direct Trains (Tap any train to select)
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600">
+              Note: <strong>Thivim (THVM)</strong> is the North Goa halt right off the Mapusa–Bicholim road for Divya Home (GoaMiles cabs available outside station).
+            </p>
+          </div>
+          <a href="https://www.irctc.co.in/nget/train-search" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-blue-700 underline">
+            Official IRCTC Portal ↗
+          </a>
+        </div>
+
+        <div id="trainDirectoryGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <!-- Populated by JS from verified timetable -->
+        </div>
+
+        <!-- Senior Citizen Porter / Shravan Seva Card at Thivim -->
+        <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <span class="text-xs font-extrabold uppercase text-indigo-800">Senior Citizen Luggage Help at Thivim Station (Goa)</span>
+            <h4 class="font-bold text-sm sm:text-base text-slate-900 mt-0.5">
+              Konkan Railway "Shravan Seva" at Thivim (THVM)
+            </h4>
+            <p class="text-xs sm:text-sm text-slate-700">
+              Konkan Railway offers senior citizen luggage assistance at Thivim station via SMS to <strong>96640 44456</strong> (4 hours before journey with PNR, coach &amp; berth).
+            </p>
+          </div>
+          <a href="sms:9664044456?body=SHRAVAN%20SEVA%20Request%20at%20Thivim%20Station%20-%20PNR:%20____%20Coach:%20____%20Berth:%20____" class="tap-card shrink-0 px-4 py-2.5 rounded-xl bg-indigo-700 hover:bg-indigo-600 text-white font-bold text-xs sm:text-sm">
+            📩 Pre-Fill Shravan Seva SMS
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         VIEW 3: FLIGHT BOOKING HUB (MOM & DAD)
+         ========================================== -->
+    <section id="viewFlights" class="hidden space-y-6">
+      <div class="bg-gradient-to-r from-sky-900 via-blue-900 to-slate-900 text-white rounded-3xl p-4 sm:p-6 shadow-md border border-sky-700">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <span class="inline-block px-3 py-1 rounded-full bg-amber-400 text-slate-950 font-extrabold text-xs uppercase tracking-wider">
+              Mom &amp; Dad • Direct Flights (BOM ↔ GOX Mopa &amp; GOI Dabolim)
+            </span>
+            <h2 class="text-xl sm:text-2xl font-extrabold mt-1">
+              1-Tap Flight Search (Mumbai ↔ North Goa Mopa GOX &amp; More)
+            </h2>
+            <p class="text-slate-200 text-sm sm:text-base">
+              Manohar International Airport, Mopa (<strong>GOX</strong>) is in North Goa — much closer to Mapusa &amp; Divya Home than Dabolim (GOI), with a 24x7 GoaMiles taxi counter at arrivals.
+            </p>
+          </div>
+          <button type="button" onclick="speakCurrentScreenGuide('flights')" class="tap-card shrink-0 px-4 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 shadow-md">
+            <span>🔊</span>
+            <span>Hear Flight Guide</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- QUICK FLIGHT ROUTE CARDS -->
+      <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border-2 border-slate-200 space-y-4">
+        <h3 class="font-extrabold text-base sm:text-lg text-slate-900">
+          ✈️ Select Flight Route &amp; Date
+        </h3>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <button type="button" onclick="setFlightPreset('BOM', 'GOX')" class="tap-card p-3.5 rounded-2xl border-2 border-blue-600 bg-blue-50 text-left">
+            <span class="text-xs font-extrabold uppercase text-blue-700 block">★ Best for Mapusa / Divya Home</span>
+            <span class="font-extrabold text-base text-slate-900 block mt-0.5">Mumbai (BOM) ➔ North Goa Mopa (GOX)</span>
+            <span class="text-xs text-slate-600">Non-stop ~1h 15m • IndiGo, Air India, Akasa</span>
+          </button>
+          <button type="button" onclick="setFlightPreset('GOX', 'BOM')" class="tap-card p-3.5 rounded-2xl border-2 border-slate-200 hover:border-blue-500 bg-slate-50 text-left">
+            <span class="text-xs font-extrabold uppercase text-emerald-700 block">Return from North Goa</span>
+            <span class="font-extrabold text-base text-slate-900 block mt-0.5">North Goa Mopa (GOX) ➔ Mumbai (BOM)</span>
+            <span class="text-xs text-slate-600">Easy GoaMiles transfer from Mapusa</span>
+          </button>
+          <button type="button" onclick="setFlightPreset('BOM', 'GOI')" class="tap-card p-3.5 rounded-2xl border-2 border-slate-200 hover:border-blue-500 bg-slate-50 text-left">
+            <span class="text-xs font-extrabold uppercase text-purple-700 block">South / Central Goa</span>
+            <span class="font-extrabold text-base text-slate-900 block mt-0.5">Mumbai (BOM) ➔ Goa Dabolim (GOI)</span>
+            <span class="text-xs text-slate-600">Non-stop ~1h 10m • Fares from ~₹3,486</span>
+          </button>
+        </div>
+
+        <!-- Flight Controls -->
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-3 border-t border-slate-200">
+          <div>
+            <label for="flightFromSelect" class="block text-xs font-bold text-slate-700 mb-1">From Airport</label>
+            <select id="flightFromSelect" onchange="updateFlightLinks()" class="w-full px-3 py-3 rounded-xl border-2 border-slate-300 font-bold text-slate-900 bg-white">
+              <option value="BOM" selected>Mumbai CSMIA (BOM)</option>
+              <option value="GOX">North Goa — Mopa (GOX)</option>
+              <option value="GOI">South Goa — Dabolim (GOI)</option>
+              <option value="IDR">Indore (IDR - for Ujjain)</option>
+              <option value="DEL">New Delhi (DEL)</option>
+            </select>
+          </div>
+          <div>
+            <label for="flightToSelect" class="block text-xs font-bold text-slate-700 mb-1">To Airport</label>
+            <select id="flightToSelect" onchange="updateFlightLinks()" class="w-full px-3 py-3 rounded-xl border-2 border-slate-300 font-bold text-slate-900 bg-white">
+              <option value="GOX" selected>North Goa — Mopa (GOX)</option>
+              <option value="GOI">South Goa — Dabolim (GOI)</option>
+              <option value="BOM">Mumbai CSMIA (BOM)</option>
+              <option value="IDR">Indore (IDR - for Ujjain)</option>
+              <option value="DEL">New Delhi (DEL)</option>
+            </select>
+          </div>
+          <div>
+            <label for="flightDateInput" class="block text-xs font-bold text-slate-700 mb-1">Departure Date</label>
+            <input id="flightDateInput" type="date" onchange="updateFlightLinks()" class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-300 font-bold text-slate-900 bg-white" />
+          </div>
+          <div>
+            <label for="flightPaxSelect" class="block text-xs font-bold text-slate-700 mb-1">Passengers</label>
+            <select id="flightPaxSelect" onchange="updateFlightLinks()" class="w-full px-3 py-3 rounded-xl border-2 border-slate-300 font-bold text-slate-900 bg-white">
+              <option value="2" selected>2 Adults (Mom &amp; Dad)</option>
+              <option value="1">1 Adult (Dad or Mom)</option>
+              <option value="3">3 Adults (Family)</option>
+              <option value="4">4 Adults (With Grandparents)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 1-TAP FLIGHT SEARCH BUTTONS -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-3">
+          <a id="mmtFlightLink" href="https://www.makemytrip.com/flights/mumbai-goa-cheap-airtickets.html" target="_blank" rel="noopener noreferrer" onclick="recordAction('Opened MakeMyTrip Pre-Filled Flight Search')" class="tap-card p-4 rounded-2xl bg-red-600 hover:bg-red-500 text-white flex items-center justify-between shadow-md">
+            <div>
+              <span class="text-xs font-extrabold uppercase bg-white/20 px-2 py-0.5 rounded">Auto-Fills Route &amp; Date</span>
+              <span class="font-extrabold text-base block mt-1">MakeMyTrip Flights</span>
+              <span class="text-xs text-red-100">Direct itinerary search</span>
+            </div>
+            <span class="text-xl font-bold">➔</span>
+          </a>
+
+          <a id="googleFlightsLink" href="https://www.google.com/travel/flights" target="_blank" rel="noopener noreferrer" onclick="recordAction('Opened Google Flights Comparison')" class="tap-card p-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-between shadow-md">
+            <div>
+              <span class="text-xs font-extrabold uppercase bg-white/20 px-2 py-0.5 rounded">No Ads • Fast Compare</span>
+              <span class="font-extrabold text-base block mt-1">Google Flights</span>
+              <span class="text-xs text-blue-100">Compare all non-stop fares</span>
+            </div>
+            <span class="text-xl font-bold">➔</span>
+          </a>
+
+          <a href="https://www.goindigo.in/domestic-flights/mumbai-to-goa-flights.html" target="_blank" rel="noopener noreferrer" onclick="recordAction('Opened IndiGo Direct Flights')" class="tap-card p-4 rounded-2xl bg-indigo-900 hover:bg-indigo-800 text-white flex items-center justify-between shadow-md">
+            <div>
+              <span class="text-xs font-extrabold uppercase bg-amber-400 text-slate-950 px-2 py-0.5 rounded">6E Senior Discount</span>
+              <span class="font-extrabold text-base block mt-1">IndiGo Official</span>
+              <span class="text-xs text-indigo-200">Fares from ~₹3,514 (BOM-Goa)</span>
+            </div>
+            <span class="text-xl font-bold">➔</span>
+          </a>
+
+          <a href="https://www.airindia.com/en-in/book-flights/mumbai-to-goa-flights" target="_blank" rel="noopener noreferrer" onclick="recordAction('Opened Air India Direct Flights')" class="tap-card p-4 rounded-2xl bg-rose-800 hover:bg-rose-700 text-white flex items-center justify-between shadow-md">
+            <div>
+              <span class="text-xs font-extrabold uppercase bg-white/20 px-2 py-0.5 rounded">Free Hot Meal + Baggage</span>
+              <span class="font-extrabold text-base block mt-1">Air India Official</span>
+              <span class="text-xs text-rose-100">AI 9841 (GOX) &amp; AI 603 (GOI)</span>
+            </div>
+            <span class="text-xl font-bold">➔</span>
+          </a>
+        </div>
+
+        <!-- Ask Om to Book Flight -->
+        <div class="pt-2">
+          <button type="button" onclick="sendFlightRequestToOm()" class="tap-card w-full py-3.5 px-4 rounded-2xl bg-green-600 hover:bg-green-500 text-white font-extrabold text-sm sm:text-base shadow flex items-center justify-center gap-2">
+            <span>📲</span>
+            <span>Send Flight Route &amp; Date to Om on WhatsApp (Om Will Book &amp; Web Check-In)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- GOA AIRPORT GUIDE FOR MOM & DAD (GOX vs GOI) -->
+      <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border-2 border-slate-200 space-y-3">
+        <h3 class="font-extrabold text-base sm:text-lg text-slate-900">
+          🧭 Quick Airport &amp; GoaMiles Guide for Mom &amp; Dad: Mopa (GOX) vs. Dabolim (GOI)
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200">
+            <div class="flex items-center justify-between">
+              <span class="font-extrabold text-base text-emerald-950">Manohar Intl Airport, Mopa (GOX)</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-emerald-600 text-white text-xs font-extrabold">CLOSEST TO MAPUSA</span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-700 mt-1.5">
+              Located in Pernem, North Goa — direct NH-66 highway drive to <strong>Mapusa &amp; Divya Home</strong> (~25–30 mins). Air India <strong>AI 9841</strong> departs Mumbai T2 at <strong>16:05</strong> and lands at GOX at <strong>17:20</strong> (1h 15m non-stop), plus daily IndiGo &amp; Akasa Air flights. GoaMiles counter is right outside Arrivals.
+            </p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <div class="flex items-center justify-between">
+              <span class="font-extrabold text-base text-slate-900">Goa International Airport, Dabolim (GOI)</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-slate-700 text-white text-xs font-extrabold">SOUTH / CENTRAL GOA</span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-700 mt-1.5">
+              Located near Vasco da Gama (~55–65 mins to Mapusa). Air India <strong>AI 603</strong> (05:10 &amp; 15:40) and <strong>AI 2841</strong> (22:00) fly non-stop from Mumbai T2 in 1h 10m, with Economy fares starting from <strong>₹3,486</strong>. GoaMiles booking booth available at Arrivals.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         VIEW 4: SAVED PLACES & AUTOMATION SETUP GUIDE
+         ========================================== -->
+    <section id="viewSetup" class="hidden space-y-6">
+      <div class="bg-white rounded-3xl p-4 sm:p-6 shadow-sm border-2 border-slate-200 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-extrabold text-slate-900">
+              📍 Manage Family Saved Places &amp; Exact GPS Pins (Mumbai &amp; Goa)
+            </h2>
+            <p class="text-sm text-slate-600">
+              You (Om) can fine-tune exact building gates or add doctors/relatives' homes here. They save directly on your parents' phone browser.
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="openPlaceModal()" class="tap-card px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-sm">
+              + Add New Family Place
+            </button>
+            <button type="button" onclick="resetDefaultPlaces()" class="tap-card px-3 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">
+              Reset Defaults
+            </button>
+          </div>
+        </div>
+
+        <div id="managePlacesList" class="divide-y divide-slate-200">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- 3-MINUTE PHONE SETUP CHECKLIST FOR OM -->
+      <div class="bg-slate-900 text-white rounded-3xl p-5 sm:p-6 shadow-md space-y-4">
+        <h3 class="text-lg sm:text-xl font-extrabold text-amber-400">
+          🛠️ Om's 3-Minute Setup Checklist on Mom, Dad &amp; Grandparents' Phones
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div class="p-4 rounded-2xl bg-slate-800 border border-slate-700 space-y-1.5">
+            <span class="text-amber-400 font-extrabold block">1. Add to Home Screen Icon</span>
+            <p class="text-slate-300">
+              Open this web app in Chrome on their Android phone, tap <strong>⋮ (Menu) → "Add to Home screen"</strong>. It creates a big 1-tap icon right next to WhatsApp.
+            </p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-800 border border-slate-700 space-y-1.5">
+            <span class="text-amber-400 font-extrabold block">2. Link Uber Family &amp; GoaMiles Wallet</span>
+            <p class="text-slate-300">
+              Add Mom, Dad &amp; Ajoba to your <strong>Uber Family Profile</strong> in Mumbai, and top up their <strong>GoaMiles wallet / UPI Autopay</strong> when in Goa so rides never fail on OTPs.
+            </p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-800 border border-slate-700 space-y-1.5">
+            <span class="text-amber-400 font-extrabold block">3. Save Uber WhatsApp &amp; GoaMiles Helpline</span>
+            <p class="text-slate-300">
+              Save <strong>+91 7292000002</strong> (Uber WhatsApp Bot) and <strong>+91 96071 98989</strong> (GoaMiles 24x7 Dispatch) in their contacts for instant non-app booking.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ADD / EDIT SAVED PLACE MODAL -->
+  <div id="placeModal" class="hidden fixed inset-0 z-50 bg-slate-950/75 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="font-extrabold text-lg text-slate-900">Add / Edit Family Destination</h3>
+        <button type="button" onclick="closePlaceModal()" class="text-slate-500 hover:text-slate-800 font-bold text-xl">✕</button>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label for="modalPlaceTitle" class="block text-xs font-bold text-slate-700 mb-1">Place Title (English)</label>
+          <input id="modalPlaceTitle" type="text" placeholder="e.g. Mapusa Friday Market / Dr. Clinic" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 font-semibold" />
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label for="modalPlaceCity" class="block text-xs font-bold text-slate-700 mb-1">City</label>
+            <select id="modalPlaceCity" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 font-semibold bg-white">
+              <option value="Mumbai">Mumbai</option>
+              <option value="Goa">Goa</option>
+            </select>
+          </div>
+          <div>
+            <label for="modalPlaceIcon" class="block text-xs font-bold text-slate-700 mb-1">Icon Emoji</label>
+            <input id="modalPlaceIcon" type="text" value="📍" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 font-semibold" />
+          </div>
+        </div>
+        <div>
+          <label for="modalPlaceAddress" class="block text-xs font-bold text-slate-700 mb-1">Full Landmark / Address</label>
+          <input id="modalPlaceAddress" type="text" placeholder="e.g. Mapusa Municipal Market, Bardez, Goa" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 font-semibold" />
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label for="modalPlaceLat" class="block text-xs font-bold text-slate-700 mb-1">Latitude</label>
+            <input id="modalPlaceLat" type="number" step="0.0001" placeholder="15.5915" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 font-semibold" />
+          </div>
+          <div>
+            <label for="modalPlaceLng" class="block text-xs font-bold text-slate-700 mb-1">Longitude</label>
+            <input id="modalPlaceLng" type="number" step="0.0001" placeholder="73.8090" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 font-semibold" />
+          </div>
+        </div>
+        <button type="button" onclick="fillModalWithCurrentGPS()" class="w-full py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs border border-emerald-200">
+          📍 Use Phone's Current GPS Coordinates
+        </button>
+      </div>
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button type="button" onclick="closePlaceModal()" class="px-4 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm">Cancel</button>
+        <button type="button" onclick="saveCustomPlace()" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-sm">Save Place</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM STICKY EMERGENCY, FLOATING MIC & QUICK-CALL OM BAR -->
+  <footer class="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t-2 border-slate-200 shadow-lg">
+    <div class="max-w-5xl mx-auto px-3 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <button type="button" onclick="startGlobalVoiceCommand()" class="tap-card px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs sm:text-sm flex items-center gap-1.5 shadow border border-amber-500">
+          <span>🎙️</span> <span>Speak Command</span>
+        </button>
+        <span id="footerHelperText" class="hidden md:inline text-xs font-bold text-slate-800">
+          Om's Remote Help Desk: <strong class="text-blue-700">+91 97694 28745</strong>
+        </span>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="tel:+919769428745" class="tap-card px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs sm:text-sm flex items-center gap-1.5 shadow">
+          <span>📞</span> <span id="btnCallOm">Call Om</span>
+        </a>
+        <button type="button" onclick="sendLiveLocationToOm()" class="tap-card px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs sm:text-sm flex items-center gap-1.5 shadow">
+          <span>📍</span> <span id="btnShareGpsOm">WhatsApp My Location to Om</span>
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // =====================================================
+    // GROUNDED DATA & INITIAL FAMILY STATE
+    // =====================================================
+    const OM_PHONE = "919769428745";
+    const UBER_WA_BOT = "917292000002";
+    const GOAMILES_HELPLINE = "+919607198989";
+
+    const FAMILY_TRAVELERS = [
+      { id: "mom", nameEn: "Mom (Dhanshri)", nameHi: "आई / मम्मी (धनश्री)", nameMr: "आई (धनश्री)", icon: "👩" },
+      { id: "dad", nameEn: "Dad (Diwakar)", nameHi: "पापा / बाबा (दिवाकर)", nameMr: "बाबा (दिवाकर)", icon: "👨" },
+      { id: "grandpa", nameEn: "Ajoba (Ramesh)", nameHi: "दादाजी / आजोबा (रमेश)", nameMr: "आजोबा (रमेश)", icon: "👴" },
+      { id: "grandma", nameEn: "Aaji (Grandma)", nameHi: "दादी / आजी", nameMr: "आजी", icon: "👵" },
+      { id: "parents", nameEn: "Mom & Dad Together", nameHi: "मम्मी और पापा साथ", nameMr: "आई आणि बाबा सोबत", icon: "👫" }
+    ];
+
+    const DEFAULT_PLACES = [
+      {
+        id: "oms_house_dahisar",
+        city: "Mumbai",
+        icon: "🏠",
+        titleEn: "Om's House (Gagangiri Complex)",
+        titleHi: "ओम का घर (गगनगिरी कॉम्प्लेक्स, दहिसर)",
+        titleMr: "ओमचे घर (गगनगिरी कॉम्प्लेक्स, दहिसर)",
+        address: "B-Wing/303, Gagangiri Complex, New Link Road, Kandarpada, Dahisar West, Mumbai 400068",
+        lat: 19.2564,
+        lng: 72.8546,
+        tag: "Om's Home • Dahisar W",
+        keywords: ["om house", "om home", "gagangiri", "kandarpada", "dahisar", "गगनगिरी", "दहिसर", "कांदरपाडा", "ओम घर"]
+      },
+      {
+        id: "sai_vishram_nia",
+        city: "Mumbai",
+        icon: "🏡",
+        titleEn: "Sai Vishram / Nia's Home",
+        titleHi: "साईं विश्राम / निया का घर (दहिसर)",
+        titleMr: "साई विश्राम / नियाचे घर (दहिसर)",
+        address: "A-Wing/203, Shree Sai Vishram, The Monarch, Laxman Mhatre Rd, Opp. City Co-Op Bank, Kandarpada, Dahisar West, Mumbai 400068",
+        lat: 19.2567,
+        lng: 72.8506,
+        tag: "Nia's Home • Dahisar W",
+        keywords: ["sai vishram", "nia", "monarch", "laxman mhatre", "साईं विश्राम", "साई विश्राम", "निया"]
+      },
+      {
+        id: "aai_home_panvel",
+        city: "Mumbai",
+        icon: "👩‍🦳",
+        titleEn: "Aai's Home (Marathon Nexzone)",
+        titleHi: "आई का घर (मैराथन नेक्सज़ोन, पनवेल)",
+        titleMr: "आईचे घर (मॅरेथॉन नेक्सझोन, पनवेल)",
+        address: "Flat 708, 7th Floor, Altis Building, Wing S1-C, Marathon Nexzone, NH-4B, JNPT Hwy, near Palaspe Phata, Panvel, Navi Mumbai 410206",
+        lat: 18.9660,
+        lng: 73.1269,
+        tag: "Aai's Home • Panvel",
+        keywords: ["aai", "panvel", "marathon", "nexzone", "altis", "palaspe", "पनवेल", "नेक्सझोन", "आई घर"]
+      },
+      {
+        id: "divyom_residence_goa",
+        city: "Goa",
+        icon: "🌴",
+        titleEn: "Divyom Residence (Goa)",
+        titleHi: "दिव्योम रेजिडेंस (गोवा)",
+        titleMr: "दिव्योम रेसिडेन्स (गोवा)",
+        address: "Divyom Residence, Mapusa, Bardez, North Goa, Goa 403507",
+        lat: 15.5915,
+        lng: 73.8090,
+        mapsUrl: "https://maps.app.goo.gl/QEpwj5FKwgbHXkmH8",
+        tag: "Goa Home",
+        keywords: ["divyom", "divya", "mapusa", "mhapsa", "bardez", "goa home", "दिव्योम", "दिव्य", "म्हापसा"]
+      },
+      {
+        id: "aaryaman_residence",
+        city: "Mumbai",
+        icon: "🏢",
+        titleEn: "Aaryaman's Residence",
+        titleHi: "आर्यमन का घर",
+        titleMr: "आर्यमनचे घर",
+        address: "Aaryaman's Residence, Western Suburbs, Mumbai",
+        lat: 19.2218,
+        lng: 72.8629,
+        mapsUrl: "https://maps.app.goo.gl/aKB5QyZfXkHj4Po77?g_st=ac",
+        tag: "Family",
+        keywords: ["aaryaman", "aryaman", "आर्यमन"]
+      },
+      {
+        id: "oberoi_skycity",
+        city: "Mumbai",
+        icon: "🛍️",
+        titleEn: "Oberoi Sky City (Borivali East)",
+        titleHi: "ओबेरॉय स्काई सिटी (बोरीवली ईस्ट)",
+        titleMr: "ओबेरॉय स्काय सिटी (बोरिवली पूर्व)",
+        address: "Oberoi Sky City, Off Western Express Highway, Devipada, Borivali East, Mumbai 400066",
+        lat: 19.2218,
+        lng: 72.8629,
+        mapsUrl: "https://maps.app.goo.gl/aKB5QyZfXkHj4Po77?g_st=ac",
+        tag: "Mall & Towers",
+        keywords: ["oberoi", "skycity", "sky city", "devipada", "ओबेरॉय", "स्काय सिटी", "स्काई सिटी"]
+      },
+      {
+        id: "salon_mumbai",
+        city: "Mumbai",
+        icon: "💇‍♀️",
+        titleEn: "Dhanshri Beauty Salon",
+        titleHi: "धनश्री ब्यूटी सैलून",
+        titleMr: "धनश्री ब्युटी सलून",
+        address: "Dhanshri Beauty Salon, Mira Road East, Mumbai 401107",
+        lat: 19.2788,
+        lng: 72.8788,
+        tag: "Mom's Salon",
+        keywords: ["salon", "parlour", "parlor", "dhanshri", "dukan", "shop", "सैलून", "सलून", "धनश्री", "पार्लर"]
+      },
+      {
+        id: "hospital_bhaktivedanta",
+        city: "Mumbai",
+        icon: "🏥",
+        titleEn: "Bhaktivedanta Hospital",
+        titleHi: "भक्तिवेदांत हॉस्पिटल (मीरा रोड)",
+        titleMr: "भक्तीवेदांत हॉस्पिटल (मिरा रोड)",
+        address: "Bhaktivedanta Swami Marg, Srishti Complex, Mira Road East, Maharashtra 401107",
+        lat: 19.2700,
+        lng: 72.8705,
+        tag: "Doctor / Checkup",
+        keywords: ["hospital", "bhaktivedanta", "doctor", "clinic", "checkup", "हॉस्पिटल", "भक्तिवेदांत", "भक्तीवेदांत", "दवाखाना", "डॉक्टर"]
+      },
+      {
+        id: "borivali_station",
+        city: "Mumbai",
+        icon: "🚉",
+        titleEn: "Borivali Railway Station",
+        titleHi: "बोरीवली रेलवे स्टेशन",
+        titleMr: "बोरिवली रेल्वे स्टेशन",
+        address: "Borivali Railway Station East/West, Mumbai, Maharashtra 400066",
+        lat: 19.2298,
+        lng: 72.8609,
+        tag: "Western Line Hub",
+        keywords: ["borivali", "बोरिवली", "बोरीवली"]
+      },
+      {
+        id: "mumbai_airport_t2",
+        city: "Mumbai",
+        icon: "✈️",
+        titleEn: "Mumbai Airport T2 (CSMIA)",
+        titleHi: "मुंबई एयरपोर्ट टर्मिनल 2 (BOM)",
+        titleMr: "मुंबई विमानतळ टर्मिनल 2 (BOM)",
+        address: "Chhatrapati Shivaji Maharaj International Airport, Sahar, Mumbai 400099",
+        lat: 19.0887,
+        lng: 72.8679,
+        tag: "Flights (BOM)",
+        keywords: ["mumbai airport", "airport", "t2", "sahar", "csmia", "एयरपोर्ट", "विमानतळ"]
+      },
+      {
+        id: "siddhivinayak_dadar",
+        city: "Mumbai",
+        icon: "🛕",
+        titleEn: "Siddhivinayak Temple / Dadar",
+        titleHi: "सिद्धिविनायक मंदिर / दादर",
+        titleMr: "सिद्धिविनायक मंदिर / दादर",
+        address: "SK Bole Road, Prabhadevi, Dadar, Mumbai 400028",
+        lat: 19.0170,
+        lng: 72.8305,
+        tag: "Temple / Darshan",
+        keywords: ["siddhivinayak", "dadar", "temple", "mandir", "prabhadevi", "सिद्धिविनायक", "दादर", "मंदिर"]
+      },
+      {
+        id: "csmt_station",
+        city: "Mumbai",
+        icon: "🚆",
+        titleEn: "Mumbai CSMT Station",
+        titleHi: "मुंबई छत्रपति शिवाजी टर्मिनस (CSMT)",
+        titleMr: "मुंबई छत्रपती शिवाजी महाराज टर्मिनस",
+        address: "Chhatrapati Shivaji Maharaj Terminus, Fort, Mumbai 400001",
+        lat: 18.9398,
+        lng: 72.8343,
+        tag: "Konkan Trains",
+        keywords: ["csmt", "vt", "cst", "victoria terminus", "छत्रपति शिवाजी", "सीएसएमटी"]
+      },
+      {
+        id: "thivim_station_goa",
+        city: "Goa",
+        icon: "🚉",
+        titleEn: "Thivim Railway Station (THVM)",
+        titleHi: "थिविम रेलवे स्टेशन (उत्तर गोवा)",
+        titleMr: "थिविम रेल्वे स्टेशन (उत्तर गोवा)",
+        address: "Thivim Railway Station, Sircaim, Mapusa–Bicholim Rd, Bardez, North Goa 403502",
+        lat: 15.6150,
+        lng: 73.8820,
+        tag: "North Goa Rail Halt",
+        keywords: ["thivim", "tivim", "thvm", "थिविम", "तिविम"]
+      },
+      {
+        id: "mopa_airport_goa",
+        city: "Goa",
+        icon: "🛫",
+        titleEn: "Mopa Airport North Goa (GOX)",
+        titleHi: "मोपा एयरपोर्ट उत्तर गोवा (GOX)",
+        titleMr: "मोपा विमानतळ उत्तर गोवा (GOX)",
+        address: "Manohar International Airport, Mopa, Pernem, North Goa 403512",
+        lat: 15.7314,
+        lng: 73.8681,
+        tag: "GoaMiles Airport Hub",
+        keywords: ["mopa", "gox", "manohar airport", "pernem", "मोपा"]
+      },
+      {
+        id: "dabolim_airport_goa",
+        city: "Goa",
+        icon: "✈️",
+        titleEn: "Dabolim Airport Goa (GOI)",
+        titleHi: "दाबोलिम एयरपोर्ट गोवा (GOI)",
+        titleMr: "दाबोलिम विमानतळ गोवा (GOI)",
+        address: "Goa International Airport, Airport Rd, Dabolim, Goa 403801",
+        lat: 15.3808,
+        lng: 73.8314,
+        tag: "GoaMiles South Hub",
+        keywords: ["dabolim", "goi", "vasco", "दाबोलिम", "वास्को"]
+      },
+      {
+        id: "panaji_bus_stand_goa",
+        city: "Goa",
+        icon: "🏖️",
+        titleEn: "Panaji / Patto Plaza (Goa)",
+        titleHi: "पणजी / पाट्टो प्लाज़ा (गोवा)",
+        titleMr: "पणजी / पाट्टो प्लाझा (गोवा)",
+        address: "Patto Plaza, Panaji, North Goa, Goa 403001",
+        lat: 15.4989,
+        lng: 73.8278,
+        tag: "Goa Capital",
+        keywords: ["panaji", "panjim", "patto", "पणजी", "पंजिम"]
+      }
+    ];
+
+    const VERIFIED_GOA_TRAINS = [
+      {
+        number: "22229",
+        name: "Mumbai CSMT – Madgaon Vande Bharat Express",
+        depStation: "CSMT",
+        depTime: "05:25",
+        arrStation: "THVM / MAO",
+        arrTime: "13:10 (MAO)",
+        duration: "7h 45m",
+        days: "Mon, Tue, Wed, Thu, Sat, Sun (6 days/wk)",
+        classes: "CC, EC",
+        highlight: "Fastest daytime train • Halts at Dadar, Thane, Panvel & Thivim (THVM)"
+      },
+      {
+        number: "20111",
+        name: "Konkan Kanya SF Express",
+        depStation: "CSMT",
+        depTime: "23:02",
+        arrStation: "THVM / MAO",
+        arrTime: "09:42 (MAO)",
+        duration: "10h 40m",
+        days: "Daily Overnight",
+        classes: "1A, 2A, 3A, SL",
+        highlight: "Best overnight sleeper • Board at night, wake up at Thivim in North Goa"
+      },
+      {
+        number: "12051",
+        name: "Mumbai CSMT – Madgaon Jan Shatabdi Express",
+        depStation: "CSMT",
+        depTime: "05:10",
+        arrStation: "THVM / MAO",
+        arrTime: "14:30 (MAO)",
+        duration: "9h 20m",
+        days: "Daily",
+        classes: "2S, CC, EV (Vistadome)",
+        highlight: "Daily early morning train with Vistadome coach • Halts at Thivim"
+      },
+      {
+        number: "22119",
+        name: "Mumbai CSMT – Madgaon Tejas Express",
+        depStation: "CSMT",
+        depTime: "05:50",
+        arrStation: "THVM / KRMI / MAO",
+        arrTime: "15:00 (MAO)",
+        duration: "9h 10m",
+        days: "Tue, Wed, Fri, Sat, Sun",
+        classes: "CC, EC, EV",
+        highlight: "Premium AC Chair Car • Halts at Thivim (THVM) & Karmali (KRMI)"
+      },
+      {
+        number: "10103",
+        name: "Mandovi Express",
+        depStation: "CSMT",
+        depTime: "07:10",
+        arrStation: "THVM / KRMI / MAO",
+        arrTime: "19:30 (MAO)",
+        duration: "12h 20m",
+        days: "Daily",
+        classes: "1A, 2A, 3A, SL",
+        highlight: "Comfortable morning departure (7:10 AM) with renowned Konkan catering"
+      },
+      {
+        number: "11099",
+        name: "LTT – Madgaon Express",
+        depStation: "LTT",
+        depTime: "00:45",
+        arrStation: "THVM / MAO",
+        arrTime: "11:55 (MAO)",
+        duration: "11h 10m",
+        days: "Tue, Fri, Sat, Sun",
+        classes: "1A, 2A, 3A, SL",
+        highlight: "Late-night boarding from Lokmanya Tilak Terminus & Thane"
+      }
+    ];
+
+    const UI_STRINGS = {
+      en: {
+        headerTitle: "Bhonsle Family Voice Travel Sahayak",
+        headerSubtitle: "Speak to Book • Uber, Ola, Rapido, GoaMiles, Trains & Flights",
+        whoLabel: "Who is traveling:",
+        tabCabs: "1. Cab & Auto",
+        tabTrains: "2. Trains",
+        tabFlights: "3. Flights",
+        tabSetup: "4. Saved Places",
+        cabHeroTitle: "Speak Your Destination OR Tap a Card Below!",
+        cabHeroDesc: "Pick your destination card below, then tap Uber, Ola, Rapido, GoaMiles, or Ask Om.",
+        btnReadInstructions: "Hear Instructions",
+        pickupHeading: "Pickup Location (Where are you right now?)",
+        btnUseMyGps: "Detect Live GPS",
+        dropHeading: "Where do you want to go? (Tap one card)",
+        customDropLabel: "Going somewhere else? Type or speak any place name in Mumbai or Goa:",
+        launchHeading: "Tap Your Preferred App to Book Ride",
+        omHelperBadge: "Facing Difficulty or App Asking for OTP / Payment?",
+        omHelperTitle: "Tap here to send your exact pickup & destination to Om on WhatsApp",
+        btnAskOmCab: "Ask Om to Book My Cab",
+        btnCallOm: "Call Om",
+        btnShareGpsOm: "WhatsApp My Location to Om",
+        voiceGuideCabs: "Namaste! You can simply tap the yellow microphone button at the top and speak where you want to go, like Book Uber to Dhanshri Salon, or Book GoaMiles to Divya Home Mapusa, and I will execute it automatically!"
+      },
+      hi: {
+        headerTitle: "भोंसले परिवार वॉइस ट्रैवल सहायक",
+        headerSubtitle: "बोलकर बुक करें • Uber, Ola, Rapido, GoaMiles, ट्रेन और फ्लाइट",
+        whoLabel: "कौन यात्रा कर रहा है:",
+        tabCabs: "1. कैब और ऑटो",
+        tabTrains: "2. ट्रेन टिकट",
+        tabFlights: "3. फ्लाइट (विमान)",
+        tabSetup: "4. सेव की गई जगहें",
+        cabHeroTitle: "माइक दबाकर बोलें या नीचे कार्ड चुनें — तुरंत बुकिंग खुलेगी!",
+        cabHeroDesc: "बस बोलें 'धनश्री सैलून के लिए उबर बुक करो' या 'गोवा माइल्स दिव्य होम म्हापसा'।",
+        btnReadInstructions: "आवाज़ में सुनें",
+        pickupHeading: "पिकअप स्थान (अभी आप कहाँ हैं?)",
+        btnUseMyGps: "मेरा लाइव GPS लें",
+        dropHeading: "आपको कहाँ जाना है? (एक कार्ड चुनें)",
+        customDropLabel: "कहीं और जाना है? जगह का नाम लिखें या माइक दबाकर बोलें:",
+        launchHeading: "कैब या ऑटो बुक करने के लिए ऐप चुनें",
+        omHelperBadge: "बुकिंग या पेमेंट में दिक्कत आ रही है?",
+        omHelperTitle: "यहाँ दबाएं — ओम को व्हाट्सऐप पर लोकेशन भेजें, ओम तुरंत कैब बुक कर देगा",
+        btnAskOmCab: "ओम को कैब बुक करने बोलें",
+        btnCallOm: "ओम को कॉल करें",
+        btnShareGpsOm: "ओम को लोकेशन भेजें",
+        voiceGuideCabs: "नमस्ते! आप ऊपर दिए गए पीले माइक बटन को दबाकर सीधा बोल सकते हैं, जैसे धनश्री सैलून के लिए उबर ऑटो बुक करो, या भक्तिवेदांत हॉस्पिटल ओला बुक करो, और ऐप अपने आप खुल जाएगा!"
+      },
+      mr: {
+        headerTitle: "भोसले कुटुंब व्हॉइस प्रवास सहाय्यक",
+        headerSubtitle: "बोलून बुक करा • Uber, Ola, Rapido, GoaMiles, रेल्वे आणि विमान",
+        whoLabel: "प्रवास कोण करत आहे:",
+        tabCabs: "1. कॅब आणि रिक्षा",
+        tabTrains: "2. रेल्वे तिकीट",
+        tabFlights: "3. विमान (Flight)",
+        tabSetup: "4. महत्त्वाची ठिकाणे",
+        cabHeroTitle: "माईक दाबून बोला किंवा खालील कार्ड निवडा — लगेच बुकिंग होईल!",
+        cabHeroDesc: "फक्त बोला 'धनश्री सलूनसाठी उबर रिक्षा बुक करा' किंवा 'गोवा माईल्स दिव्य होम म्हापसा'.",
+        btnReadInstructions: "सूचना ऐका",
+        pickupHeading: "पिकअप ठिकाण (तुम्ही आत्ता कुठे आहात?)",
+        btnUseMyGps: "माझे GPS लोकेशन घ्या",
+        dropHeading: "तुम्हाला कुठे जायचे आहे? (एका कार्डवर टॅप करा)",
+        customDropLabel: "दुसऱ्या ठिकाणी जायचे आहे का? ठिकाणाचे नाव लिहा किंवा माईक दाबा:",
+        launchHeading: "कॅब किंवा रिक्षा बुक करण्यासाठी खालील बटण दाबा",
+        omHelperBadge: "बुकिंग किंवा OTP मध्ये अडचण येत आहे का?",
+        omHelperTitle: "येथे दाबा — ओमला व्हॉट्सॲपवर मेसेज जाईल आणि ओम लगेच कॅब बुक करेल",
+        btnAskOmCab: "ओमला कॅब बुक करायला सांगा",
+        btnCallOm: "ओमला फोन करा",
+        btnShareGpsOm: "ओमला लोकेशन पाठवा",
+        voiceGuideCabs: "नमस्कार! तुम्ही वरती दिलेले पिवळे माईक बटण दाबून थेट बोलू शकता, जसे की धनश्री सलूनसाठी उबर बुक करा, किंवा दिव्य होम म्हापसासाठी गोवा माईल्स बुक करा, आणि ॲप आपोआप सुरू होईल!"
+      }
+    };
+
+    const STATION_NAMES = {
+      CSMT: "Mumbai CSMT",
+      DR: "Dadar Central",
+      LTT: "Lokmanya Tilak Terminus",
+      PNVL: "Panvel",
+      BSR: "Vasai Road (Near Mira Rd)",
+      BVI: "Borivali",
+      MMCT: "Mumbai Central",
+      THVM: "Thivim (North Goa / Mapusa)",
+      KRMI: "Karmali (Panaji Goa)",
+      MAO: "Madgaon Jn (Goa)",
+      UJN: "Ujjain Jn"
+    };
+
+    let state = {
+      lang: "en",
+      fontScaleIndex: 0,
+      voiceEnabled: true,
+      activeTab: "cabs",
+      selectedTravelerId: "mom",
+      pickupMode: "my_location",
+      liveGpsCoords: null,
+      selectedDropId: "oms_house_dahisar",
+      customDropText: "",
+      cityFilter: "all",
+      vehicleType: "auto",
+      places: []
+    };
+
+    let pendingExecutionCallback = null;
+    let countdownTimerId = null;
+
+    // =====================================================
+    // INITIALIZATION & LOCALSTORAGE SAFE LOAD
+    // =====================================================
+    function loadPlacesFromStorage() {
+      try {
+        const raw = localStorage.getItem("bhonsle_family_places_v4");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            state.places = parsed;
+            return;
+          }
+        }
+      } catch (e) {}
+      state.places = JSON.parse(JSON.stringify(DEFAULT_PLACES));
+    }
+
+    function savePlacesToStorage() {
+      try {
+        localStorage.setItem("bhonsle_family_places_v4", JSON.stringify(state.places));
+      } catch (e) {}
+    }
+
+    function initDefaultDates() {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const iso = tomorrow.toISOString().split("T")[0];
+      const trainDateEl = document.getElementById("trainDateInput");
+      const flightDateEl = document.getElementById("flightDateInput");
+      if (trainDateEl) trainDateEl.value = iso;
+      if (flightDateEl) flightDateEl.value = iso;
+    }
+
+    // =====================================================
+    // SPEAK-TO-EXECUTE NATURAL LANGUAGE INTENT ENGINE
+    // =====================================================
+    function startGlobalVoiceCommand() {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const micBtn = document.getElementById("heroMicBtn");
+      const mainTxt = document.getElementById("heroMicMainText");
+
+      if (!SpeechRec) {
+        showToast("Browser microphone blocked in preview — type in the command box or tap any sample voice chip below!");
+        document.getElementById("voiceCommandInput").focus();
+        return;
+      }
+
+      const rec = new SpeechRec();
+      rec.lang = state.lang === "hi" ? "hi-IN" : state.lang === "mr" ? "mr-IN" : "en-IN";
+      rec.interimResults = false;
+      rec.maxAlternatives = 1;
+
+      if (micBtn) micBtn.classList.add("mic-listening");
+      if (mainTxt) mainTxt.textContent = state.lang === "hi" ? "सुन रहा हूँ... बोलिए" : state.lang === "mr" ? "ऐकत आहे... बोला" : "LISTENING... SPEAK NOW";
+
+      rec.onresult = evt => {
+        const transcript = evt.results[0][0].transcript;
+        document.getElementById("voiceCommandInput").value = transcript;
+        parseAndExecuteVoiceCommand(transcript);
+      };
+
+      rec.onerror = () => {
+        if (micBtn) micBtn.classList.remove("mic-listening");
+        if (mainTxt) mainTxt.textContent = "TAP & SPEAK COMMAND";
+        showToast("Could not hear clearly. Tap a sample command chip or type in the box!");
+      };
+
+      rec.onend = () => {
+        if (micBtn) micBtn.classList.remove("mic-listening");
+        if (mainTxt) mainTxt.textContent = "TAP & SPEAK COMMAND";
+      };
+
+      rec.start();
+    }
+
+    function runManualVoiceCommand() {
+      const val = document.getElementById("voiceCommandInput").value.trim();
+      if (!val) {
+        showToast("Please speak or type a command first.");
+        return;
+      }
+      parseAndExecuteVoiceCommand(val);
+    }
+
+    function simulateSpokenCommand(commandText) {
+      document.getElementById("voiceCommandInput").value = commandText;
+      parseAndExecuteVoiceCommand(commandText);
+    }
+
+    function parseAndExecuteVoiceCommand(rawText) {
+      const text = rawText.toLowerCase().trim();
+
+      // 1. Detect Traveler if mentioned
+      if (/mom|mummy|aai|dhanshri|मम्मी|आई|धनश्री/.test(text) && /dad|papa|baba|diwakar|पापा|बाबा|दिवाकर/.test(text)) {
+        state.selectedTravelerId = "parents";
+      } else if (/mom|mummy|aai|dhanshri|मम्मी|आई|धनश्री/.test(text)) {
+        state.selectedTravelerId = "mom";
+      } else if (/dad|papa|baba|diwakar|पापा|बाबा|दिवाकर/.test(text)) {
+        state.selectedTravelerId = "dad";
+      } else if (/ajoba|grandpa|grandfather|dadaji|ramesh|आजोबा|दादाजी|रमेश/.test(text)) {
+        state.selectedTravelerId = "grandpa";
+      } else if (/aaji|grandma|grandmother|dadi|आजी|दादी/.test(text)) {
+        state.selectedTravelerId = "grandma";
+      }
+      renderTravelerPills();
+
+      // 2. Check if user is asking Om to book or help
+      if (/(\bom\b|ओम|help|मदद|मदत)/.test(text) && !/home/.test(text)) {
+        scheduleAutoExecution({
+          heard: rawText,
+          badge: "WHATSAPP DISPATCH TO OM (+91 97694 28745)",
+          summary: "Sending your live route & booking request directly to Om on WhatsApp",
+          subNote: "Om will receive your 1-click booking link and send you the driver OTP.",
+          voiceReplyEn: "Sending your booking request to Om on WhatsApp now.",
+          voiceReplyHi: "ओम को व्हाट्सऐप पर आपकी बुकिंग रिक्वेस्ट भेज रहा हूँ।",
+          voiceReplyMr: "ओमला व्हॉट्सॲपवर तुमची बुकिंग विनंती पाठवत आहे.",
+          actionFn: () => {
+            if (state.activeTab === "trains") sendTrainRequestToOm();
+            else if (state.activeTab === "flights") sendFlightRequestToOm();
+            else sendCabRequestToOm();
+          }
+        });
+        return;
+      }
+
+      // 3. Check if Train Booking Intent
+      if (/train|railway|irctc|vande bharat|konkan kanya|shatabdi|mandovi|tejas|confirmtkt|ixigo|ट्रेन|रेल्वे|वंदे भारत|कोंकण कन्या|उज्जैन|ujjain/.test(text)) {
+        switchTab("trains");
+        let fromStn = "CSMT";
+        let toStn = "THVM";
+        if (/ujjain|उज्जैन/.test(text)) {
+          fromStn = "MMCT";
+          toStn = "UJN";
+        } else if (/vasai|mira|borivali|बोरिवली|वसई/.test(text)) {
+          fromStn = "BSR";
+          toStn = "THVM";
+        } else if (/karmali|panaji|panjim|करमाली|पणजी/.test(text)) {
+          fromStn = "CSMT";
+          toStn = "KRMI";
+        } else if (/madgaon|margao|मडगाव/.test(text)) {
+          fromStn = "CSMT";
+          toStn = "MAO";
+        }
+        setTrainPreset(fromStn, toStn);
+
+        if (/vande bharat|वंदे भारत|chair car/.test(text)) {
+          document.getElementById("trainClassSelect").value = "CC - Vande Bharat / Jan Shatabdi";
+        }
+        updateTrainLinks();
+
+        const useAskDisha = /disha|voice|दिशा/.test(text);
+        const targetUrl = useAskDisha
+          ? document.getElementById("askDishaLink").href
+          : document.getElementById("confirmTktLink").href;
+
+        scheduleAutoExecution({
+          heard: rawText,
+          badge: "IRCTC / CONFIRMTKT TRAIN EXECUTION",
+          summary: `Searching Confirmed Trains: ${STATION_NAMES[fromStn]} ➔ ${STATION_NAMES[toStn]}`,
+          subNote: "Pre-filled station codes & date on ConfirmTkt.",
+          voiceReplyEn: `Opening train booking from ${STATION_NAMES[fromStn]} to ${STATION_NAMES[toStn]}.`,
+          voiceReplyHi: `${STATION_NAMES[fromStn]} से ${STATION_NAMES[toStn]} के लिए ट्रेन बुकिंग खोल रहा हूँ।`,
+          voiceReplyMr: `${STATION_NAMES[fromStn]} ते ${STATION_NAMES[toStn]} रेल्वे बुकिंग उघडत आहे.`,
+          actionFn: () => {
+            window.open(targetUrl, "_blank", "noopener");
+          }
+        });
+        return;
+      }
+
+      // 4. Check if Flight Booking Intent
+      if (/flight|plane|airline|indigo|air india|makemytrip|akasa|फ्लाइट|विमान|मोपा एयरपोर्ट/.test(text) && !/cab|taxi|uber|ola|goamiles/.test(text)) {
+        switchTab("flights");
+        let fromAir = "BOM";
+        let toAir = "GOX";
+        if (/dabolim|goi|दाबोलिम/.test(text)) {
+          toAir = "GOI";
+        } else if (/indore|ujjain|इंदौर|उज्जैन/.test(text)) {
+          toAir = "IDR";
+        } else if (/from goa|from mopa|to mumbai|मुंबई के लिए/.test(text)) {
+          fromAir = "GOX";
+          toAir = "BOM";
+        }
+        setFlightPreset(fromAir, toAir);
+        const paxCount = state.selectedTravelerId === "parents" ? "2" : "1";
+        document.getElementById("flightPaxSelect").value = paxCount;
+        updateFlightLinks();
+
+        const mmtUrl = document.getElementById("mmtFlightLink").href;
+        scheduleAutoExecution({
+          heard: rawText,
+          badge: "FLIGHT ITINERARY EXECUTION",
+          summary: `Opening Non-Stop Flights: ${fromAir} ➔ ${toAir} (${paxCount} Adult${paxCount === "2" ? "s" : ""})`,
+          subNote: "Pre-filled route, date, and passengers on MakeMyTrip.",
+          voiceReplyEn: `Opening direct flights from ${fromAir} to ${toAir}.`,
+          voiceReplyHi: `${fromAir} से ${toAir} के लिए सीधी फ्लाइट खोल रहा हूँ।`,
+          voiceReplyMr: `${fromAir} ते ${toAir} थेट विमान बुकिंग उघडत आहे.`,
+          actionFn: () => {
+            window.open(mmtUrl, "_blank", "noopener");
+          }
+        });
+        return;
+      }
+
+      // 5. Default: Cab / Auto / GoaMiles Booking Intent
+      switchTab("cabs");
+
+      // Detect vehicle type
+      if (/auto|rickshaw|रिक्षा|ऑटो|रिक्शा/.test(text)) {
+        setVehicleType("auto");
+      } else if (/suv|xl|ertiga|innova|family car|बड़ी गाड़ी/.test(text)) {
+        setVehicleType("xl");
+      } else if (/cab|car|taxi|sedan|कैब|टैक्सी|कार/.test(text)) {
+        setVehicleType("cab");
+      }
+
+      // Match saved place by keywords or title
+      let matchedPlace = null;
+      for (const pl of state.places) {
+        const kwList = pl.keywords || [pl.titleEn.toLowerCase()];
+        if (kwList.some(k => text.includes(k.toLowerCase())) || text.includes(pl.titleEn.toLowerCase())) {
+          matchedPlace = pl;
+          break;
+        }
+      }
+
+      if (matchedPlace) {
+        selectDestination(matchedPlace.id);
+      } else {
+        // Extract custom place phrase after 'to ' or use raw text
+        let customClean = rawText
+          .replace(/^(book|open|get|call|chalo|take me to|i want to go to|मुझे|मला)\s+/i, "")
+          .replace(/\b(uber|ola|rapido|goamiles|goa miles|auto|cab|taxi|rickshaw|बुक करो|जाना है|जायचे आहे)\b/gi, "")
+          .replace(/\bto\b/i, "")
+          .trim();
+        if (!customClean) customClean = rawText;
+        document.getElementById("customDropInput").value = customClean;
+        handleCustomDestinationInput(customClean);
+      }
+
+      const activeDrop = getActiveDropObject();
+      const dropLabel = getPlaceTitle(activeDrop) || activeDrop.titleEn;
+
+      // If user asks for cheapest/compare OR speaks a destination without forcing a single app, run the 3-App AI Agent Scanner!
+      const explicitlyNamedSingleApp = /\b(uber|ola|rapido|goamiles|goa miles|whatsapp)\b|उबर|ओला|रैपिडो|रॅपिडो|गोवा माइल्स|गोवा माईल्स|व्हाट्सऐप|व्हॉट्सॲप/.test(text);
+      if (/cheap|price|compare|rate|fare|estimate|सस्ता|कितना|भाव|स्वस्त|भाडे/.test(text) || !explicitlyNamedSingleApp) {
+        startAgentThreeAppScan();
+        return;
+      }
+
+      // Determine platform to execute when a specific app was named
+      let chosenApp = "uber";
+      if (/goamiles|goa miles|गोवा माइल्स|गोवा माईल्स/.test(text) || activeDrop.city === "Goa") {
+        chosenApp = "goamiles";
+      } else if (/ola|ओला/.test(text)) {
+        chosenApp = "ola";
+      } else if (/rapido|रैपिडो|रॅपिडो/.test(text)) {
+        chosenApp = "rapido";
+      } else if (/whatsapp|व्हाट्सऐप|व्हॉट्सॲप/.test(text)) {
+        chosenApp = "uber_wa";
+      }
+
+      const appDisplayNames = {
+        uber: "Uber (1-Tap Pre-Filled Ride)",
+        ola: "Ola Cabs / Auto",
+        rapido: "Rapido (Address Auto-Copied)",
+        goamiles: "GoaMiles Official Goa Taxi",
+        uber_wa: "Official Uber WhatsApp Bot (+91 7292000002)"
+      };
+
+      scheduleAutoExecution({
+        heard: rawText,
+        badge: `CAB / AUTO EXECUTION • ${appDisplayNames[chosenApp].toUpperCase()}`,
+        summary: `Destination: ${dropLabel} via ${appDisplayNames[chosenApp]}`,
+        subNote: chosenApp === "goamiles" || chosenApp === "rapido"
+          ? `Address "${activeDrop.titleEn}" copied to clipboard & launching app.`
+          : `GPS coordinates (${activeDrop.lat}, ${activeDrop.lng}) pre-filled automatically.`,
+        voiceReplyEn: `Got it! Opening ${chosenApp === "goamiles" ? "Goa Miles" : chosenApp} for ${activeDrop.titleEn}.`,
+        voiceReplyHi: `समझ गया! ${dropLabel} के लिए ${chosenApp === "goamiles" ? "गोवा माइल्स" : chosenApp} खोल रहा हूँ।`,
+        voiceReplyMr: `समजले! ${dropLabel} साठी ${chosenApp === "goamiles" ? "गोवा माईल्स" : chosenApp} उघडत आहे.`,
+        actionFn: () => {
+          if (chosenApp === "goamiles") {
+            launchGoaMilesWithCopy();
+          } else if (chosenApp === "ola") {
+            window.open(document.getElementById("olaDeepLinkBtn").href, "_blank", "noopener");
+          } else if (chosenApp === "rapido") {
+            launchRapidoWithCopy();
+          } else if (chosenApp === "uber_wa") {
+            window.open(document.getElementById("uberWhatsappBotBtn").href, "_blank", "noopener");
+          } else {
+            window.open(document.getElementById("uberDeepLinkBtn").href, "_blank", "noopener");
+          }
+        }
+      });
+    }
+
+    function scheduleAutoExecution(cfg) {
+      if (countdownTimerId) clearInterval(countdownTimerId);
+      pendingExecutionCallback = cfg.actionFn;
+
+      document.getElementById("execModalHeardText").textContent = `"${cfg.heard}"`;
+      document.getElementById("execModalTypeBadge").textContent = cfg.badge;
+      document.getElementById("execModalActionSummary").textContent = cfg.summary;
+      document.getElementById("execModalSubNote").textContent = cfg.subNote;
+
+      const modal = document.getElementById("voiceExecutionModal");
+      const bar = document.getElementById("execProgressBar");
+      const label = document.getElementById("execCountdownLabel");
+      const pct = document.getElementById("execCountdownPct");
+
+      modal.classList.remove("hidden");
+      bar.style.width = "100%";
+      label.textContent = "Auto-launching in 2.5 seconds...";
+      pct.textContent = "100%";
+
+      // Speak confirmation
+      const spoken = state.lang === "hi" ? cfg.voiceReplyHi : state.lang === "mr" ? cfg.voiceReplyMr : cfg.voiceReplyEn;
+      speakText(spoken);
+
+      let remainingSteps = 5; // 5 * 500ms = 2.5s
+      countdownTimerId = setInterval(() => {
+        remainingSteps -= 1;
+        const widthPct = Math.max(0, remainingSteps * 20);
+        bar.style.width = widthPct + "%";
+        pct.textContent = widthPct + "%";
+        label.textContent = `Auto-launching in ${(remainingSteps * 0.5).toFixed(1)}s...`;
+        if (remainingSteps <= 0) {
+          clearInterval(countdownTimerId);
+          countdownTimerId = null;
+          triggerPendingExecutionNow();
+        }
+      }, 500);
+    }
+
+    function triggerPendingExecutionNow() {
+      if (countdownTimerId) {
+        clearInterval(countdownTimerId);
+        countdownTimerId = null;
+      }
+      document.getElementById("voiceExecutionModal").classList.add("hidden");
+      if (typeof pendingExecutionCallback === "function") {
+        const fn = pendingExecutionCallback;
+        pendingExecutionCallback = null;
+        fn();
+      }
+    }
+
+    function cancelVoiceExecution() {
+      if (countdownTimerId) {
+        clearInterval(countdownTimerId);
+        countdownTimerId = null;
+      }
+      pendingExecutionCallback = null;
+      document.getElementById("voiceExecutionModal").classList.add("hidden");
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      showToast("Voice auto-launch cancelled. You can tap any button manually.");
+    }
+
+    // =====================================================
+    // MULTILINGUAL, FONT SCALE & VOICE ENGINE
+    // =====================================================
+    function setLanguage(lang) {
+      state.lang = lang;
+      ["en", "hi", "mr"].forEach(code => {
+        const btn = document.getElementById("langBtn" + code.charAt(0).toUpperCase() + code.slice(1));
+        if (btn) {
+          btn.className = code === lang
+            ? "px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-amber-400 text-slate-950 transition"
+            : "px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold text-slate-200 hover:text-white transition";
+        }
+      });
+
+      const t = UI_STRINGS[lang];
+      document.getElementById("headerTitle").textContent = t.headerTitle;
+      document.getElementById("headerSubtitle").textContent = t.headerSubtitle;
+      document.getElementById("whoLabel").textContent = t.whoLabel;
+      document.getElementById("tabTextCabs").textContent = t.tabCabs;
+      document.getElementById("tabTextTrains").textContent = t.tabTrains;
+      document.getElementById("tabTextFlights").textContent = t.tabFlights;
+      document.getElementById("tabTextSetup").textContent = t.tabSetup;
+      document.getElementById("cabHeroTitle").textContent = t.cabHeroTitle;
+      document.getElementById("cabHeroDesc").textContent = t.cabHeroDesc;
+      document.getElementById("btnReadInstructions").textContent = t.btnReadInstructions;
+      document.getElementById("pickupHeading").textContent = t.pickupHeading;
+      document.getElementById("btnUseMyGps").textContent = t.btnUseMyGps;
+      document.getElementById("dropHeading").textContent = t.dropHeading;
+      document.getElementById("customDropLabel").textContent = t.customDropLabel;
+      document.getElementById("launchHeading").textContent = t.launchHeading;
+      document.getElementById("omHelperBadge").textContent = t.omHelperBadge;
+      document.getElementById("omHelperTitle").textContent = t.omHelperTitle;
+      document.getElementById("btnAskOmCab").textContent = t.btnAskOmCab;
+      document.getElementById("btnCallOm").textContent = t.btnCallOm;
+      document.getElementById("btnShareGpsOm").textContent = t.btnShareGpsOm;
+
+      renderTravelerPills();
+      renderPickupOptions();
+      renderDestinationCards();
+      updateCabDeepLinks();
+    }
+
+    function cycleFontSize() {
+      const body = document.getElementById("appBody");
+      const label = document.getElementById("fontSizeLabel");
+      state.fontScaleIndex = (state.fontScaleIndex + 1) % 3;
+      body.classList.remove("scale-normal", "scale-large", "scale-xlarge");
+      if (state.fontScaleIndex === 0) {
+        body.classList.add("scale-normal");
+        label.textContent = "A+";
+        showToast("Standard Text Size");
+      } else if (state.fontScaleIndex === 1) {
+        body.classList.add("scale-large");
+        label.textContent = "A++";
+        showToast("Large Senior Text Size Enabled");
+      } else {
+        body.classList.add("scale-xlarge");
+        label.textContent = "A (Reset)";
+        showToast("Extra-Large Grandparent Text Size Enabled");
+      }
+    }
+
+    function toggleSeniorSimpleMode() {
+      state.seniorSimple = !state.seniorSimple;
+      const btn = document.getElementById("seniorSimpleBtn");
+      const lbl = document.getElementById("seniorSimpleLabel");
+      const body = document.getElementById("appBody");
+      const navBar = document.querySelector("nav");
+
+      if (state.seniorSimple) {
+        switchTab("cabs");
+        body.classList.remove("scale-normal", "scale-large");
+        body.classList.add("scale-xlarge");
+        document.getElementById("fontSizeLabel").textContent = "A (Reset)";
+        state.fontScaleIndex = 2;
+        if (navBar) navBar.classList.add("hidden");
+        btn.className = "px-3 py-1.5 rounded-xl bg-amber-400 text-slate-950 text-xs sm:text-sm font-black flex items-center gap-1 shadow";
+        lbl.textContent = "Senior Mode: ON";
+        showToast("Grandparents Simple Mode ON: Extra-large text & 1-Tap Voice/Cab focus!");
+        speakText(state.lang === "hi" ? "सीनियर मोड चालू है। बस माइक दबाकर बोलें।" : "Senior Simple Mode enabled. Just tap the microphone and speak.");
+      } else {
+        body.classList.remove("scale-large", "scale-xlarge");
+        body.classList.add("scale-normal");
+        document.getElementById("fontSizeLabel").textContent = "A+";
+        state.fontScaleIndex = 0;
+        if (navBar) navBar.classList.remove("hidden");
+        btn.className = "px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs sm:text-sm font-bold text-amber-300 flex items-center gap-1";
+        lbl.textContent = "Senior Mode: OFF";
+        showToast("Standard Full Mode Restored (Cabs, Trains, Flights & Setup)");
+      }
+    }
+
+    function triggerTaskerDeepLinkIntent() {
+      const drop = getActiveDropObject();
+      const intentUri =
+        `bhonsleagent://autobook?title=${encodeURIComponent(drop.titleEn)}` +
+        `&address=${encodeURIComponent(drop.address)}` +
+        `&lat=${encodeURIComponent(drop.lat || 19.2564)}` +
+        `&lng=${encodeURIComponent(drop.lng || 72.8546)}` +
+        `&vehicle=${encodeURIComponent(state.vehicleType)}` +
+        `&lang=${encodeURIComponent(state.lang)}`;
+      showToast("Sending Screen-Takeover Command to Tasker / Android Agent...");
+      window.location.href = intentUri;
+    }
+
+    function toggleVoiceAssist() {
+      state.voiceEnabled = !state.voiceEnabled;
+      const btn = document.getElementById("voiceToggleBtn");
+      const label = document.getElementById("voiceLabel");
+      const icon = document.getElementById("voiceIcon");
+      if (state.voiceEnabled) {
+        btn.className = "px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow";
+        label.textContent = "Voice: ON";
+        icon.textContent = "🔊";
+        speakText(state.lang === "hi" ? "आवाज़ गाइड चालू है" : state.lang === "mr" ? "आवाज मार्गदर्शक सुरू आहे" : "Voice assistance enabled");
+      } else {
+        btn.className = "px-3 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs sm:text-sm font-bold flex items-center gap-1.5";
+        label.textContent = "Voice: OFF";
+        icon.textContent = "🔇";
+        if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      }
+    }
+
+    function speakText(text) {
+      if (!state.voiceEnabled || !("speechSynthesis" in window)) return;
+      try {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = state.lang === "hi" ? "hi-IN" : state.lang === "mr" ? "mr-IN" : "en-IN";
+        utter.rate = 0.92;
+        window.speechSynthesis.speak(utter);
+      } catch (e) {}
+    }
+
+    function speakCurrentScreenGuide(screen) {
+      const prevVoice = state.voiceEnabled;
+      state.voiceEnabled = true;
+      if (screen === "cabs") {
+        speakText(UI_STRINGS[state.lang].voiceGuideCabs);
+      } else if (screen === "trains") {
+        speakText(
+          state.lang === "hi"
+            ? "यहाँ मुंबई से गोवा और उज्जैन की सभी प्रमुख ट्रेनें दी गई हैं। थिविम स्टेशन म्हापसा और दिव्य होम के सबसे करीब है। टिकट बुक करने के लिए कन्फर्म टिकट या ओम को व्हाट्सऐप भेजें बटन दबाएं।"
+            : "Select your train route and date, then tap Confirm Ticket, ixigo, or send to Om on WhatsApp to book your lower berth ticket."
+        );
+      } else if (screen === "flights") {
+        speakText(
+          state.lang === "hi"
+            ? "म्हापसा और दिव्य होम जाने के लिए उत्तर गोवा का मोपा एयरपोर्ट GOX सबसे पास है। मेकमायट्रिप या गूगल फ्लाइट्स बटन दबाएं, या ओम को व्हाट्सऐप भेजें।"
+            : "For Mapusa and Divya Home in North Goa, select Mopa Airport G O X. Tap MakeMyTrip, Google Flights, or send to Om on WhatsApp."
+        );
+      }
+      state.voiceEnabled = prevVoice;
+    }
+
+    // =====================================================
+    // TRAVELER & TAB NAVIGATION
+    // =====================================================
+    function renderTravelerPills() {
+      const container = document.getElementById("travelerPills");
+      if (!container) return;
+      container.innerHTML = FAMILY_TRAVELERS.map(tr => {
+        const active = tr.id === state.selectedTravelerId;
+        const label = state.lang === "hi" ? tr.nameHi : state.lang === "mr" ? tr.nameMr : tr.nameEn;
+        return `
+          <button type="button" onclick="selectTraveler('${tr.id}')"
+            class="tap-card shrink-0 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition ${
+              active
+                ? "bg-amber-400 text-slate-950 shadow"
+                : "bg-slate-800 text-slate-200 hover:bg-slate-700 border border-slate-700"
+            }">
+            <span>${tr.icon}</span>
+            <span>${label}</span>
+          </button>
+        `;
+      }).join("");
+    }
+
+    function selectTraveler(id) {
+      state.selectedTravelerId = id;
+      renderTravelerPills();
+      if ((id === "grandpa" || id === "grandma") && state.fontScaleIndex === 0) {
+        cycleFontSize();
+      }
+      const tr = FAMILY_TRAVELERS.find(t => t.id === id);
+      if (tr) {
+        const label = state.lang === "hi" ? tr.nameHi : state.lang === "mr" ? tr.nameMr : tr.nameEn;
+        showToast("Booking for: " + label);
+        speakText(label);
+      }
+      const paxEl = document.getElementById("flightPaxSelect");
+      if (paxEl) {
+        paxEl.value = id === "parents" ? "2" : "1";
+        updateFlightLinks();
+      }
+    }
+
+    function switchTab(tab) {
+      state.activeTab = tab;
+      const views = {
+        cabs: document.getElementById("viewCabs"),
+        trains: document.getElementById("viewTrains"),
+        flights: document.getElementById("viewFlights"),
+        setup: document.getElementById("viewSetup")
+      };
+      const btns = {
+        cabs: document.getElementById("tabBtnCabs"),
+        trains: document.getElementById("tabBtnTrains"),
+        flights: document.getElementById("tabBtnFlights"),
+        setup: document.getElementById("tabBtnSetup")
+      };
+      Object.keys(views).forEach(k => {
+        if (k === tab) {
+          views[k].classList.remove("hidden");
+          btns[k].className = "tap-card flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-2xl font-extrabold text-xs sm:text-base border-2 border-blue-600 bg-blue-600 text-white shadow-sm";
+        } else {
+          views[k].classList.add("hidden");
+          btns[k].className = "tap-card flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-2xl font-extrabold text-xs sm:text-base border-2 border-slate-200 bg-slate-50 text-slate-800 hover:bg-slate-100";
+        }
+      });
+      if (tab === "setup") renderManagePlacesList();
+    }
+
+    // =====================================================
+    // CAB BOOKING: PICKUP, DESTINATION & DEEP LINKS
+    // =====================================================
+    function getPlaceTitle(place) {
+      if (!place) return "";
+      return state.lang === "hi" ? (place.titleHi || place.titleEn) : state.lang === "mr" ? (place.titleMr || place.titleEn) : place.titleEn;
+    }
+
+    function renderPickupOptions() {
+      const grid = document.getElementById("pickupOptionsGrid");
+      if (!grid) return;
+
+      const homeMumbai = state.places.find(p => p.id === "oms_house_dahisar") || state.places[0];
+      const salonMumbai = state.places.find(p => p.id === "sai_vishram_nia") || state.places[1];
+      const divyaGoa = state.places.find(p => p.id === "aai_home_panvel") || state.places[2];
+
+      const quickPickups = [
+        { id: "my_location", icon: "📡", title: state.lang === "hi" ? "मेरा वर्तमान GPS" : state.lang === "mr" ? "माझे सध्याचे लोकेशन" : "My Current GPS" },
+        { id: homeMumbai.id, icon: homeMumbai.icon, title: getPlaceTitle(homeMumbai) },
+        { id: salonMumbai.id, icon: salonMumbai.icon, title: getPlaceTitle(salonMumbai) },
+        { id: divyaGoa.id, icon: divyaGoa.icon, title: getPlaceTitle(divyaGoa) }
+      ];
+
+      grid.innerHTML = quickPickups.map(item => {
+        const active = state.pickupMode === item.id;
+        return `
+          <button type="button" onclick="selectPickup('${item.id}')"
+            class="tap-card p-3 rounded-2xl border-2 text-left flex items-center gap-2.5 transition ${
+              active
+                ? "border-emerald-600 bg-emerald-50 text-emerald-950 font-extrabold selected-ring"
+                : "border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-800 font-bold"
+            }">
+            <span class="text-xl shrink-0">${item.icon}</span>
+            <span class="text-xs sm:text-sm truncate">${item.title}</span>
+          </button>
+        `;
+      }).join("");
+    }
+
+    function selectPickup(id) {
+      state.pickupMode = id;
+      renderPickupOptions();
+      const statusEl = document.getElementById("gpsStatusText");
+      if (id === "my_location") {
+        statusEl.innerHTML = `Current Pickup: <strong class="text-emerald-800">My Current Phone GPS Location (Automatic)</strong>`;
+      } else {
+        const pl = state.places.find(p => p.id === id);
+        if (pl) {
+          statusEl.innerHTML = `Current Pickup: <strong class="text-emerald-800">${getPlaceTitle(pl)} (${pl.address})</strong>`;
+          speakText(getPlaceTitle(pl));
+        }
+      }
+      updateCabDeepLinks();
+    }
+
+    function detectLiveGPS() {
+      if (!navigator.geolocation) {
+        showToast("GPS not supported by browser; using automatic phone location in Uber/Ola/GoaMiles.");
+        return;
+      }
+      showToast("Detecting live GPS coordinates...");
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          state.liveGpsCoords = {
+            lat: Number(pos.coords.latitude.toFixed(5)),
+            lng: Number(pos.coords.longitude.toFixed(5))
+          };
+          state.pickupMode = "my_location";
+          renderPickupOptions();
+          const isInGoa = state.liveGpsCoords.lat >= 14.8 && state.liveGpsCoords.lat <= 16.0;
+          if (isInGoa) {
+            filterPlaces("Goa");
+          }
+          document.getElementById("gpsStatusText").innerHTML =
+            `Current Pickup: <strong class="text-emerald-700">Live GPS Locked (${state.liveGpsCoords.lat}, ${state.liveGpsCoords.lng}) ${isInGoa ? "• Goa Detected 🌴" : ""}</strong>`;
+          updateCabDeepLinks();
+          showToast(isInGoa ? "Goa Live GPS Locked! Showing GoaMiles & Goa places." : "Live GPS Location Locked!");
+        },
+        () => {
+          state.pickupMode = "my_location";
+          renderPickupOptions();
+          showToast("Using built-in phone GPS location.");
+        },
+        { enableHighAccuracy: true, timeout: 6000 }
+      );
+    }
+
+    function filterPlaces(city) {
+      state.cityFilter = city;
+      const btnAll = document.getElementById("filterCityAll");
+      const btnMum = document.getElementById("filterCityMumbai");
+      const btnGoa = document.getElementById("filterCityGoa");
+
+      if (btnAll) btnAll.className = city === "all" ? "px-3 py-1.5 rounded-lg text-xs font-extrabold bg-slate-900 text-white" : "px-3 py-1.5 rounded-lg text-xs font-extrabold bg-slate-100 text-slate-700 hover:bg-slate-200";
+      if (btnMum) btnMum.className = city === "Mumbai" ? "px-3 py-1.5 rounded-lg text-xs font-extrabold bg-blue-700 text-white" : "px-3 py-1.5 rounded-lg text-xs font-extrabold bg-slate-100 text-slate-700 hover:bg-slate-200";
+      if (btnGoa) btnGoa.className = city === "Goa" ? "px-3 py-1.5 rounded-lg text-xs font-extrabold bg-teal-700 text-white" : "px-3 py-1.5 rounded-lg text-xs font-extrabold bg-amber-100 text-amber-900 hover:bg-amber-200";
+
+      renderDestinationCards();
+    }
+
+    function renderDestinationCards() {
+      const grid = document.getElementById("destinationCardsGrid");
+      if (!grid) return;
+
+      const filtered = state.places.filter(p => state.cityFilter === "all" || p.city === state.cityFilter);
+
+      grid.innerHTML = filtered.map(place => {
+        const isSelected = state.customDropText === "" && state.selectedDropId === place.id;
+        const title = getPlaceTitle(place);
+        return `
+          <button type="button" onclick="selectDestination('${place.id}')"
+            class="tap-card p-4 rounded-2xl border-2 text-left flex items-start gap-3.5 transition ${
+              isSelected
+                ? "border-blue-600 bg-blue-50/90 selected-ring"
+                : "border-slate-200 bg-white hover:border-blue-300 hover:bg-slate-50"
+            }">
+            <div class="w-12 h-12 rounded-2xl ${isSelected ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-800"} flex items-center justify-center text-2xl shrink-0 shadow-sm">
+              ${place.icon}
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center justify-between gap-1">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider ${
+                  place.city === "Goa" ? "bg-teal-100 text-teal-900" : "bg-blue-100 text-blue-900"
+                }">${place.city} • ${place.tag || "Saved"}</span>
+                ${isSelected ? '<span class="text-blue-700 font-extrabold text-xs">✓ SELECTED</span>' : ""}
+              </div>
+              <h4 class="font-extrabold text-base sm:text-lg text-slate-900 mt-1 leading-snug truncate">
+                ${title}
+              </h4>
+              <p class="text-xs text-slate-600 line-clamp-2 mt-0.5">
+                ${place.address}
+              </p>
+            </div>
+          </button>
+        `;
+      }).join("");
+    }
+
+    function selectDestination(placeId) {
+      state.selectedDropId = placeId;
+      state.customDropText = "";
+      const customInput = document.getElementById("customDropInput");
+      if (customInput) customInput.value = "";
+
+      renderDestinationCards();
+      updateCabDeepLinks();
+
+      const place = state.places.find(p => p.id === placeId);
+      if (place) {
+        const title = getPlaceTitle(place);
+        const suffix = place.city === "Goa" ? " (Tap GoaMiles below to book in Goa!)" : "";
+        showToast("Destination Selected: " + title + suffix);
+        speakText(title);
+      }
+    }
+
+    function handleCustomDestinationInput(val) {
+      state.customDropText = val.trim();
+      renderDestinationCards();
+      updateCabDeepLinks();
+    }
+
+    function setVehicleType(vType) {
+      state.vehicleType = vType;
+      const map = {
+        auto: document.getElementById("vehAuto"),
+        cab: document.getElementById("vehCab"),
+        xl: document.getElementById("vehXl")
+      };
+      Object.keys(map).forEach(k => {
+        if (k === vType) {
+          map[k].className = "px-3 py-1.5 rounded-xl text-xs sm:text-sm font-extrabold bg-amber-400 text-slate-950 shadow-sm";
+        } else {
+          map[k].className = "px-3 py-1.5 rounded-xl text-xs sm:text-sm font-extrabold text-slate-700 hover:bg-white";
+        }
+      });
+      updateCabDeepLinks();
+    }
+
+    function getActiveDropObject() {
+      if (state.customDropText) {
+        const isGoaCustom = /goa|mapusa|panaji|panjim|mopa|dabolim|thivim|calangute|baga|anjuna|margao/i.test(state.customDropText) || state.cityFilter === "Goa";
+        return {
+          city: isGoaCustom ? "Goa" : "Mumbai",
+          titleEn: state.customDropText,
+          address: state.customDropText + (isGoaCustom ? ", Goa, India" : ", Mumbai, India"),
+          lat: isGoaCustom ? 15.5915 : 19.2800,
+          lng: isGoaCustom ? 73.8090 : 72.8600,
+          isCustom: true
+        };
+      }
+      return state.places.find(p => p.id === state.selectedDropId) || state.places[0];
+    }
+
+    function getActivePickupObject() {
+      if (state.pickupMode === "my_location") {
+        if (state.liveGpsCoords) {
+          return {
+            isMyLocation: false,
+            titleEn: "My Live GPS Location",
+            address: "Current GPS Position",
+            lat: state.liveGpsCoords.lat,
+            lng: state.liveGpsCoords.lng
+          };
+        }
+        return { isMyLocation: true, titleEn: "My Current Location" };
+      }
+      const pl = state.places.find(p => p.id === state.pickupMode);
+      return pl ? { ...pl, isMyLocation: false } : { isMyLocation: true, titleEn: "My Current Location" };
+    }
+
+    function haversineKm(lat1, lon1, lat2, lon2) {
+      const toRad = d => (d * Math.PI) / 180;
+      const R = 6371;
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function computeThreeAppEstimates(pickup, drop) {
+      const pLat = pickup.lat || 19.2564;
+      const pLng = pickup.lng || 72.8546;
+      const dLat = drop.lat || 19.2564;
+      const dLng = drop.lng || 72.8546;
+      const straightKm = haversineKm(pLat, pLng, dLat, dLng);
+      const roadKm = Math.max(1.5, Number((straightKm * 1.32).toFixed(1)));
+
+      const hour = new Date().getHours();
+      const isNight = hour >= 0 && hour < 5;
+      const nightMult = isNight ? 1.25 : 1.0;
+
+      // Grounded MMRTA Sept 2026 tariffs: Auto ₹27 (1.5km) + ₹18.22/km; Taxi ₹33 (1.5km) + ₹21.90/km (+10% AC)
+      let baseFare = 0;
+      if (state.vehicleType === "auto") {
+        baseFare = (27 + Math.max(0, roadKm - 1.5) * 18.22) * nightMult;
+      } else if (state.vehicleType === "cab") {
+        baseFare = (33 + Math.max(0, roadKm - 1.5) * 21.90) * 1.10 * nightMult;
+      } else {
+        baseFare = (45 + Math.max(0, roadKm - 1.5) * 29.00) * nightMult;
+      }
+
+      if (drop.city === "Goa" || pickup.city === "Goa") {
+        const goaFare = Math.round(Math.max(120, roadKm * 22.5));
+        return {
+          roadKm,
+          isGoa: true,
+          options: [
+            { app: "goamiles", name: "GoaMiles Official", min: goaFare, max: Math.round(goaFare * 1.15), badge: "BEST IN GOA" },
+            { app: "uber", name: "Uber (Limited in Goa)", min: Math.round(goaFare * 1.15), max: Math.round(goaFare * 1.35), badge: "Check App" },
+            { app: "ola", name: "Ola (Limited in Goa)", min: Math.round(goaFare * 1.18), max: Math.round(goaFare * 1.38), badge: "Check App" }
+          ]
+        };
+      }
+
+      const rapidoMin = Math.round(baseFare * 0.94);
+      const rapidoMax = Math.round(baseFare * 1.08);
+      const olaMin = Math.round(baseFare * 0.98);
+      const olaMax = Math.round(baseFare * 1.15);
+      const uberMin = Math.round(baseFare * 1.02);
+      const uberMax = Math.round(baseFare * 1.20);
+
+      const options = [
+        { app: "rapido", name: "Rapido", min: rapidoMin, max: rapidoMax, badge: "USUALLY CHEAPEST" },
+        { app: "ola", name: "Ola", min: olaMin, max: olaMax, badge: "Compare" },
+        { app: "uber", name: "Uber", min: uberMin, max: uberMax, badge: "1-Tap Auto-Fill" }
+      ];
+      return { roadKm, isGoa: false, options };
+    }
+
+    function renderFareEstimates() {
+      const pickup = getActivePickupObject();
+      const drop = getActiveDropObject();
+      const { roadKm, options } = computeThreeAppEstimates(pickup, drop);
+
+      const sumEl = document.getElementById("fareDistanceSummary");
+      if (sumEl) {
+        sumEl.textContent = `Est. Road Distance: ~${roadKm} km • Cheapest Typical Option: ${options[0].name} (₹${options[0].min}–₹${options[0].max})`;
+      }
+
+      const grid = document.getElementById("fareEstimateGrid");
+      if (!grid) return;
+
+      grid.innerHTML = options.map((opt, idx) => `
+        <button type="button" onclick="launchAppByKey('${opt.app}')"
+          class="tap-card p-3 rounded-xl border-2 text-left flex items-center justify-between gap-2 ${
+            idx === 0
+              ? "border-emerald-600 bg-emerald-50 text-emerald-950"
+              : "border-slate-200 bg-white hover:border-blue-400 text-slate-900"
+          }">
+          <div>
+            <span class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded ${idx === 0 ? "bg-emerald-600 text-white" : "bg-slate-200 text-slate-700"}">${opt.badge}</span>
+            <span class="font-extrabold text-sm block mt-1">${opt.name}</span>
+            <span class="text-xs font-bold text-slate-600">Est. ₹${opt.min} – ₹${opt.max}</span>
+          </div>
+          <span class="text-lg font-black">➔</span>
+        </button>
+      `).join("");
+    }
+
+    function launchAppByKey(appKey) {
+      if (appKey === "goamiles") launchGoaMilesWithCopy();
+      else if (appKey === "rapido") launchRapidoWithCopy();
+      else if (appKey === "ola") window.open(document.getElementById("olaDeepLinkBtn").href, "_blank", "noopener");
+      else window.open(document.getElementById("uberDeepLinkBtn").href, "_blank", "noopener");
+    }
+
+    let agentScanTimers = [];
+    let currentWinningAppKey = "rapido";
+
+    function clearAgentScanTimers() {
+      agentScanTimers.forEach(id => clearTimeout(id));
+      agentScanTimers = [];
+    }
+
+    function stopAgentMultiScan() {
+      clearAgentScanTimers();
+      document.getElementById("agentScannerModal").classList.add("hidden");
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      showToast("AI Agent scan paused. You can tap any app button below.");
+    }
+
+    function executeWinningAppImmediately() {
+      clearAgentScanTimers();
+      document.getElementById("agentScannerModal").classList.add("hidden");
+      launchAppByKey(currentWinningAppKey);
+    }
+
+    function startAgentThreeAppScan() {
+      clearAgentScanTimers();
+      const pickup = getActivePickupObject();
+      const drop = getActiveDropObject();
+      const dropLabel = getPlaceTitle(drop) || drop.titleEn;
+
+      // 1. If running inside the Native Android Accessibility APK wrapper, trigger real OS screen-takeover!
+      if (window.AndroidAgentBridge && typeof window.AndroidAgentBridge.startMultiAppScanAndBook === "function") {
+        try {
+          const started = window.AndroidAgentBridge.startMultiAppScanAndBook(
+            drop.titleEn,
+            drop.address,
+            Number(drop.lat || 19.2564),
+            Number(drop.lng || 72.8546),
+            state.vehicleType,
+            state.lang
+          );
+          if (started) {
+            showToast("Native Android AI Agent Activated: Scanning Uber, Ola & Rapido on screen...");
+            return;
+          }
+        } catch (e) {}
+      }
+
+      // 2. Compute route & fares for the 3 apps
+      const { roadKm, options } = computeThreeAppEstimates(pickup, drop);
+      const uberOpt = options.find(o => o.app === "uber") || options[2];
+      const olaOpt = options.find(o => o.app === "ola") || options[1];
+      const rapidoOrGoaOpt = options[0];
+
+      const uPrice = Math.round((uberOpt.min + uberOpt.max) / 2);
+      const oPrice = Math.round((olaOpt.min + olaOpt.max) / 2);
+      const rPrice = Math.round((rapidoOrGoaOpt.min + rapidoOrGoaOpt.max) / 2);
+
+      currentWinningAppKey = rapidoOrGoaOpt.app;
+
+      // Reset Modal UI
+      document.getElementById("agentScannerDestTitle").textContent = `Scanning 3 Apps ➔ ${dropLabel} (~${roadKm} km)`;
+      document.getElementById("scanStatusUber").textContent = "Scanning Uber route...";
+      document.getElementById("scanPriceUber").textContent = "⏳";
+      document.getElementById("scanStatusOla").textContent = "Waiting in queue...";
+      document.getElementById("scanPriceOla").textContent = "--";
+      document.getElementById("scanStatusRapido").textContent = "Waiting in queue...";
+      document.getElementById("scanPriceRapido").textContent = "--";
+      document.getElementById("agentStageLabel").textContent = "STEP 1 OF 4 • CHECKING UBER";
+      document.getElementById("agentWinnerText").textContent = `Checking Uber ${state.vehicleType.toUpperCase()} price for ${dropLabel}...`;
+      document.getElementById("agentScannerModal").classList.remove("hidden");
+
+      // Step 1: Uber found (after 900ms)
+      agentScanTimers.push(setTimeout(() => {
+        document.getElementById("scanStatusUber").textContent = "Fare retrieved ✓";
+        document.getElementById("scanPriceUber").textContent = `₹${uPrice}`;
+        document.getElementById("scanStatusOla").textContent = "Scanning Ola route...";
+        document.getElementById("scanPriceOla").textContent = "⏳";
+        document.getElementById("agentStageLabel").textContent = "STEP 2 OF 4 • CHECKING OLA CABS";
+        document.getElementById("agentWinnerText").textContent = `Uber is ₹${uPrice}. Now checking Ola...`;
+      }, 900));
+
+      // Step 2: Ola found (after 1800ms)
+      agentScanTimers.push(setTimeout(() => {
+        document.getElementById("scanStatusOla").textContent = "Fare retrieved ✓";
+        document.getElementById("scanPriceOla").textContent = `₹${oPrice}`;
+        document.getElementById("scanStatusRapido").textContent = `Scanning ${rapidoOrGoaOpt.name}...`;
+        document.getElementById("scanPriceRapido").textContent = "⏳";
+        document.getElementById("agentStageLabel").textContent = `STEP 3 OF 4 • CHECKING ${rapidoOrGoaOpt.name.toUpperCase()}`;
+        document.getElementById("agentWinnerText").textContent = `Uber ₹${uPrice} • Ola ₹${oPrice}. Checking ${rapidoOrGoaOpt.name}...`;
+      }, 1800));
+
+      // Step 3: Rapido/GoaMiles found & Dictate All 3 + Winner (after 2700ms)
+      agentScanTimers.push(setTimeout(() => {
+        document.getElementById("scanStatusRapido").textContent = "Lowest Fare Winner ★";
+        document.getElementById("scanPriceRapido").textContent = `₹${rPrice}`;
+        document.getElementById("agentStageLabel").textContent = `STEP 4 OF 4 • DICTATING & BOOKING ${rapidoOrGoaOpt.name.toUpperCase()}`;
+        document.getElementById("agentWinnerText").textContent =
+          `Winner: ${rapidoOrGoaOpt.name} at ₹${rPrice} (vs Ola ₹${oPrice}, Uber ₹${uPrice}) — Auto-Booking!`;
+
+        const dictEn = `Checked all three apps for ${drop.titleEn}. Uber is ${uPrice} rupees, Ola is ${oPrice} rupees, and ${rapidoOrGoaOpt.name} is the cheapest at ${rPrice} rupees. Booking ${rapidoOrGoaOpt.name} now.`;
+        const dictHi = `${dropLabel} के लिए तीनों ऐप चेक कर लिए गए हैं। उबर ${uPrice} रुपये, ओला ${oPrice} रुपये, और ${rapidoOrGoaOpt.name} सबसे सस्ता ${rPrice} रुपये है। अब ${rapidoOrGoaOpt.name} बुक कर रहा हूँ।`;
+        const dictMr = `${dropLabel} साठी तिन्ही ॲप्स तपासले आहेत. उबर ${uPrice} रुपये, ओला ${oPrice} रुपये, आणि ${rapidoOrGoaOpt.name} सर्वात स्वस्त ${rPrice} रुपये आहे. आता ${rapidoOrGoaOpt.name} बुक करत आहे.`;
+
+        speakText(state.lang === "hi" ? dictHi : state.lang === "mr" ? dictMr : dictEn);
+      }, 2700));
+
+      // Step 4: Auto-launch winning app (after 6200ms so voice finishes dictating prices)
+      agentScanTimers.push(setTimeout(() => {
+        executeWinningAppImmediately();
+      }, 6200));
+    }
+
+    function compareThreeAppsAndDictate(autoLaunch) {
+      const pickup = getActivePickupObject();
+      const drop = getActiveDropObject();
+      const dropLabel = getPlaceTitle(drop) || drop.titleEn;
+      const { roadKm, options } = computeThreeAppEstimates(pickup, drop);
+      const best = options[0];
+
+      const spokenEn = `For ${drop.titleEn}, about ${roadKm} kilometers away, ${best.name} is typically cheapest at ${best.min} to ${best.max} rupees, compared to ${options[1].name} at ${options[1].min} to ${options[1].max} rupees and ${options[2].name} at ${options[2].min} to ${options[2].max} rupees. ${autoLaunch ? "Opening " + best.name + " now." : ""}`;
+      const spokenHi = `${dropLabel} की दूरी लगभग ${roadKm} किलोमीटर है। ${best.name} सबसे सस्ता अनुमानित विकल्प है, लगभग ${best.min} से ${best.max} रुपये। ${autoLaunch ? best.name + " खोल रहा हूँ।" : ""}`;
+      const spokenMr = `${dropLabel} चे अंतर अंदाजे ${roadKm} किलोमीटर आहे. ${best.name} सर्वात स्वस्त पर्याय आहे, अंदाजे ${best.min} ते ${best.max} रुपये. ${autoLaunch ? best.name + " उघडत आहे." : ""}`;
+
+      if (autoLaunch) {
+        scheduleAutoExecution({
+          heard: `Compare 3 Apps ➔ ${dropLabel}`,
+          badge: `3-APP COMPARISON • CHEAPEST: ${best.name.toUpperCase()}`,
+          summary: `${best.name} (Est. ₹${best.min}–₹${best.max}) is typically cheapest for ${roadKm} km`,
+          subNote: `Also checked ${options[1].name} (₹${options[1].min}–₹${options[1].max}) & ${options[2].name} (₹${options[2].min}–₹${options[2].max}).`,
+          voiceReplyEn: spokenEn,
+          voiceReplyHi: spokenHi,
+          voiceReplyMr: spokenMr,
+          actionFn: () => launchAppByKey(best.app)
+        });
+      } else {
+        speakText(state.lang === "hi" ? spokenHi : state.lang === "mr" ? spokenMr : spokenEn);
+      }
+    }
+
+    function updateCabDeepLinks() {
+      const pickup = getActivePickupObject();
+      const drop = getActiveDropObject();
+      const dropTitle = getPlaceTitle(drop) || drop.titleEn;
+
+      const summaryEl = document.getElementById("selectedRouteSummary");
+      if (summaryEl) {
+        summaryEl.textContent = `Pickup: ${pickup.titleEn} ➔ Drop: ${dropTitle} (${state.vehicleType.toUpperCase()})`;
+      }
+
+      const goaCard = document.getElementById("goaMilesCardContainer");
+      const goaBadge = document.getElementById("goaActiveBadge");
+      if (goaCard && goaBadge) {
+        if (drop.city === "Goa" || pickup.city === "Goa") {
+          goaCard.className = "p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-teal-900 via-emerald-900 to-slate-900 text-white border-4 border-amber-400 shadow-xl space-y-3";
+          goaBadge.textContent = `★ Recommended for ${drop.titleEn} in Goa!`;
+        } else {
+          goaCard.className = "p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-teal-900 via-cyan-900 to-slate-900 text-white border-2 border-teal-400 shadow-lg space-y-3";
+          goaBadge.textContent = "Best for Mapusa (Divya Home), Thivim Station, Mopa (GOX) & Dabolim (GOI)";
+        }
+      }
+
+      // 1. Construct Official Uber Universal Deep Link
+      let uberUrl = "https://m.uber.com/ul/?action=setPickup";
+      if (pickup.isMyLocation) {
+        uberUrl += "&pickup=my_location";
+      } else {
+        uberUrl += `&pickup[latitude]=${encodeURIComponent(pickup.lat)}&pickup[longitude]=${encodeURIComponent(pickup.lng)}&pickup[nickname]=${encodeURIComponent(pickup.titleEn)}&pickup[formatted_address]=${encodeURIComponent(pickup.address)}`;
+      }
+      if (!drop.isCustom) {
+        uberUrl += `&dropoff[latitude]=${encodeURIComponent(drop.lat)}&dropoff[longitude]=${encodeURIComponent(drop.lng)}&dropoff[nickname]=${encodeURIComponent(drop.titleEn)}&dropoff[formatted_address]=${encodeURIComponent(drop.address)}`;
+      } else {
+        uberUrl += `&dropoff[nickname]=${encodeURIComponent(drop.titleEn)}&dropoff[formatted_address]=${encodeURIComponent(drop.address)}`;
+      }
+      const uberBtn = document.getElementById("uberDeepLinkBtn");
+      if (uberBtn) uberBtn.href = uberUrl;
+
+      // 2. Construct Ola Deep Link
+      let olaUrl = `https://book.olacabs.com/?drop_lat=${encodeURIComponent(drop.lat)}&drop_lng=${encodeURIComponent(drop.lng)}&drop_name=${encodeURIComponent(drop.titleEn + " - " + drop.address)}&category=${encodeURIComponent(state.vehicleType)}&utm_source=family_sahayak`;
+      if (!pickup.isMyLocation && pickup.lat && pickup.lng) {
+        olaUrl += `&pickup_lat=${encodeURIComponent(pickup.lat)}&pickup_lng=${encodeURIComponent(pickup.lng)}&pickup_name=${encodeURIComponent(pickup.titleEn)}`;
+      }
+      const olaBtn = document.getElementById("olaDeepLinkBtn");
+      if (olaBtn) olaBtn.href = olaUrl;
+
+      // 3. Construct Official Uber WhatsApp Bot pre-filled message
+      const waBotBtn = document.getElementById("uberWhatsappBotBtn");
+      if (waBotBtn) {
+        waBotBtn.href = `https://wa.me/${UBER_WA_BOT}?text=${encodeURIComponent("Hi")}`;
+      }
+
+      renderFareEstimates();
+    }
+
+    function copyTextToClipboard(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      } catch (e) {}
+    }
+
+    function launchGoaMilesWithCopy() {
+      const drop = getActiveDropObject();
+      const copyStr = `${drop.titleEn}, ${drop.address}`;
+      copyTextToClipboard(copyStr);
+      showToast(`Copied "${drop.titleEn}"! Paste it inside GoaMiles app, or call +91 96071 98989.`);
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      if (isAndroid) {
+        window.location.href = "intent://#Intent;package=com.frotamiles.goamiles_user;S.browser_fallback_url=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.frotamiles.goamiles_user;end";
+      } else if (isIOS) {
+        window.open("https://apps.apple.com/in/app/goamiles/id1414383690", "_blank", "noopener");
+      } else {
+        window.open("https://play.google.com/store/apps/details?id=com.frotamiles.goamiles_user&hl=en_IN", "_blank", "noopener");
+      }
+    }
+
+    function launchRapidoWithCopy() {
+      const drop = getActiveDropObject();
+      const copyStr = `${drop.titleEn}, ${drop.address}`;
+      copyTextToClipboard(copyStr);
+      showToast(`Copied "${drop.titleEn}"! Paste it inside Rapido's Drop box.`);
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      if (isAndroid) {
+        window.location.href = "intent://#Intent;package=com.rapido.passenger;scheme=rapido;S.browser_fallback_url=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.rapido.passenger;end";
+      } else {
+        window.open("https://play.google.com/store/apps/details?id=com.rapido.passenger", "_blank", "noopener");
+      }
+    }
+
+    function sendCabRequestToOm() {
+      const tr = FAMILY_TRAVELERS.find(t => t.id === state.selectedTravelerId) || FAMILY_TRAVELERS[0];
+      const pickup = getActivePickupObject();
+      const drop = getActiveDropObject();
+      const uberUrl = document.getElementById("uberDeepLinkBtn").href;
+
+      const mapsPin = (!pickup.isMyLocation && pickup.lat)
+        ? `https://www.google.com/maps?q=${pickup.lat},${pickup.lng}`
+        : "Phone Live Location";
+
+      const serviceLabel = drop.city === "Goa" ? "GoaMiles / Goa Taxi" : `Uber / Ola / Rapido (${state.vehicleType.toUpperCase()})`;
+
+      const msg =
+        `🚕 *Cab Booking Request for Om*\n` +
+        `👤 *Passenger:* ${tr.nameEn}\n` +
+        `📍 *Pickup:* ${pickup.titleEn} (${mapsPin})\n` +
+        `🏁 *Dropoff:* ${drop.titleEn} (${drop.address})\n` +
+        `🛺 *Service:* ${serviceLabel}\n` +
+        (drop.city === "Goa" ? `📞 *GoaMiles 24x7 Desk:* ${GOAMILES_HELPLINE}\n\n` : `\n`) +
+        `👉 *Om's 1-Tap Booking Link:*\n${uberUrl}`;
+
+      window.open(`https://wa.me/${OM_PHONE}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
+      showToast("Opening WhatsApp to send Cab Request to Om...");
+    }
+
+    // =====================================================
+    // TRAIN HUB LOGIC
+    // =====================================================
+    function renderTrainDirectory() {
+      const grid = document.getElementById("trainDirectoryGrid");
+      if (!grid) return;
+      grid.innerHTML = VERIFIED_GOA_TRAINS.map(tr => `
+        <div onclick="selectVerifiedTrain('${tr.depStation}', 'THVM', '${tr.number}')"
+          class="tap-card cursor-pointer p-4 rounded-2xl border-2 border-slate-200 hover:border-blue-600 bg-slate-50 hover:bg-blue-50/40 flex flex-col justify-between gap-2">
+          <div>
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-lg bg-blue-900 text-white font-extrabold text-xs">#${tr.number}</span>
+              <span class="text-xs font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md">${tr.duration} • ${tr.classes}</span>
+            </div>
+            <h4 class="font-extrabold text-base text-slate-900 mt-1.5">${tr.name}</h4>
+            <p class="text-xs font-bold text-slate-700 mt-0.5">
+              🕒 Departs ${tr.depStation}: <strong>${tr.depTime}</strong> ➔ Arrives ${tr.arrStation}: <strong>${tr.arrTime}</strong>
+            </p>
+            <p class="text-xs text-slate-600 mt-1">${tr.highlight}</p>
+          </div>
+          <div class="pt-2 border-t border-slate-200/80 flex items-center justify-between text-xs font-bold text-blue-700">
+            <span>Runs: ${tr.days}</span>
+            <span>Tap to Select ➔</span>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function setTrainPreset(fromCode, toCode) {
+      const fromEl = document.getElementById("trainFromSelect");
+      const toEl = document.getElementById("trainToSelect");
+      if (fromEl) fromEl.value = fromCode;
+      if (toEl) toEl.value = toCode;
+      updateTrainLinks();
+      const fromLabel = STATION_NAMES[fromCode] || fromCode;
+      const toLabel = STATION_NAMES[toCode] || toCode;
+      showToast(`Route set: ${fromLabel} ➔ ${toLabel}`);
+    }
+
+    function selectVerifiedTrain(depCode, arrCode, trainNum) {
+      const fromEl = document.getElementById("trainFromSelect");
+      const toEl = document.getElementById("trainToSelect");
+      if (fromEl) fromEl.value = depCode;
+      if (toEl) toEl.value = arrCode;
+      updateTrainLinks();
+      const tr = VERIFIED_GOA_TRAINS.find(t => t.number === trainNum);
+      const label = tr ? `${tr.number} ${tr.name}` : trainNum;
+      showToast(`Selected ${label} — Now tap ConfirmTkt, ixigo, or Send to Om!`);
+      speakText(label);
+    }
+
+    function updateTrainLinks() {
+      const fromCode = document.getElementById("trainFromSelect").value;
+      const toCode = document.getElementById("trainToSelect").value;
+      const rawDate = document.getElementById("trainDateInput").value;
+      let ddmmyyyy = "";
+      if (rawDate && rawDate.includes("-")) {
+        const [y, m, d] = rawDate.split("-");
+        ddmmyyyy = `${d}-${m}-${y}`;
+      }
+
+      const confirmLink = document.getElementById("confirmTktLink");
+      if (confirmLink) {
+        confirmLink.href = ddmmyyyy
+          ? `https://www.confirmtkt.com/rbooking-d/trains/from/${fromCode}/to/${toCode}/${ddmmyyyy}`
+          : `https://www.confirmtkt.com/trains/mumbai-to-goa-train-tickets`;
+      }
+
+      const ixigoLink = document.getElementById("ixigoTrainLink");
+      if (ixigoLink) {
+        ixigoLink.href = `https://www.ixigo.com/trains`;
+      }
+    }
+
+    function sendTrainRequestToOm() {
+      const tr = FAMILY_TRAVELERS.find(t => t.id === state.selectedTravelerId) || FAMILY_TRAVELERS[0];
+      const fromCode = document.getElementById("trainFromSelect").value;
+      const toCode = document.getElementById("trainToSelect").value;
+      const dateVal = document.getElementById("trainDateInput").value;
+      const coachVal = document.getElementById("trainClassSelect").value;
+      const confirmUrl = document.getElementById("confirmTktLink").href;
+
+      const msg =
+        `🚆 *IRCTC Train Ticket Request for Om*\n` +
+        `👤 *Traveler:* ${tr.nameEn}\n` +
+        `🚉 *Route:* ${fromCode} ➔ ${toCode}\n` +
+        `📅 *Date:* ${dateVal}\n` +
+        `💺 *Preference:* ${coachVal} (Senior Citizen Lower Berth)\n\n` +
+        `👉 *Direct Availability Link:*\n${confirmUrl}`;
+
+      window.open(`https://wa.me/${OM_PHONE}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
+      showToast("Sending Train Booking Request to Om on WhatsApp...");
+    }
+
+    // =====================================================
+    // FLIGHT HUB LOGIC
+    // =====================================================
+    function setFlightPreset(fromIata, toIata) {
+      document.getElementById("flightFromSelect").value = fromIata;
+      document.getElementById("flightToSelect").value = toIata;
+      updateFlightLinks();
+      showToast(`Flight Route Set: ${fromIata} ➔ ${toIata}`);
+    }
+
+    function updateFlightLinks() {
+      const fromIata = document.getElementById("flightFromSelect").value;
+      const toIata = document.getElementById("flightToSelect").value;
+      const rawDate = document.getElementById("flightDateInput").value;
+      const pax = document.getElementById("flightPaxSelect").value;
+
+      let slashDate = "20/11/2026";
+      if (rawDate && rawDate.includes("-")) {
+        const [y, m, d] = rawDate.split("-");
+        slashDate = `${d}/${m}/${y}`;
+      }
+
+      const mmtUrl = `https://www.makemytrip.com/flight/search?itinerary=${fromIata}-${toIata}-${slashDate}&tripType=O&paxType=A-${pax}_C-0_I-0&intl=false&cabinClass=E&ccde=IN&lang=eng`;
+      const mmtEl = document.getElementById("mmtFlightLink");
+      if (mmtEl) mmtEl.href = mmtUrl;
+
+      const gfQuery = `Flights from ${fromIata} to ${toIata} on ${rawDate} for ${pax} adults nonstop`;
+      const gfUrl = `https://www.google.com/travel/flights?q=${encodeURIComponent(gfQuery)}&curr=INR`;
+      const gfEl = document.getElementById("googleFlightsLink");
+      if (gfEl) gfEl.href = gfUrl;
+    }
+
+    function sendFlightRequestToOm() {
+      const tr = FAMILY_TRAVELERS.find(t => t.id === state.selectedTravelerId) || FAMILY_TRAVELERS[0];
+      const fromIata = document.getElementById("flightFromSelect").value;
+      const toIata = document.getElementById("flightToSelect").value;
+      const rawDate = document.getElementById("flightDateInput").value;
+      const pax = document.getElementById("flightPaxSelect").value;
+      const gfUrl = document.getElementById("googleFlightsLink").href;
+
+      const msg =
+        `✈️ *Flight Booking Request for Om*\n` +
+        `👤 *Traveler:* ${tr.nameEn} (${pax} Adult(s))\n` +
+        `🛫 *Route:* ${fromIata} ➔ ${toIata}\n` +
+        `📅 *Date:* ${rawDate}\n\n` +
+        `👉 *Compare Non-Stop Fares:*\n${gfUrl}`;
+
+      window.open(`https://wa.me/${OM_PHONE}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
+      showToast("Sending Flight Request to Om on WhatsApp...");
+    }
+
+    // =====================================================
+    // SAVED PLACES MANAGER & VOICE DICTATION
+    // =====================================================
+    function renderManagePlacesList() {
+      const list = document.getElementById("managePlacesList");
+      if (!list) return;
+      list.innerHTML = state.places.map(p => `
+        <div class="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl">${p.icon}</span>
+            <div>
+              <span class="font-extrabold text-sm sm:text-base text-slate-900">${p.titleEn}</span>
+              <span class="ml-2 px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-bold text-xs">${p.city}</span>
+              <p class="text-xs text-slate-600">${p.address} (${p.lat}, ${p.lng})</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 self-end sm:self-center">
+            <button type="button" onclick="deleteSavedPlace('${p.id}')" class="px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200">
+              Delete
+            </button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function openPlaceModal() {
+      document.getElementById("placeModal").classList.remove("hidden");
+    }
+
+    function closePlaceModal() {
+      document.getElementById("placeModal").classList.add("hidden");
+    }
+
+    function fillModalWithCurrentGPS() {
+      if (!navigator.geolocation) {
+        showToast("Geolocation not supported on this device.");
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(pos => {
+        document.getElementById("modalPlaceLat").value = pos.coords.latitude.toFixed(4);
+        document.getElementById("modalPlaceLng").value = pos.coords.longitude.toFixed(4);
+        showToast("Filled current GPS coordinates!");
+      });
+    }
+
+    function saveCustomPlace() {
+      const title = document.getElementById("modalPlaceTitle").value.trim();
+      const city = document.getElementById("modalPlaceCity").value;
+      const icon = document.getElementById("modalPlaceIcon").value.trim() || "📍";
+      const address = document.getElementById("modalPlaceAddress").value.trim() || title;
+      const lat = parseFloat(document.getElementById("modalPlaceLat").value) || (city === "Goa" ? 15.5915 : 19.2800);
+      const lng = parseFloat(document.getElementById("modalPlaceLng").value) || (city === "Goa" ? 73.8090 : 72.8600);
+
+      if (!title) {
+        showToast("Please enter a place title.");
+        return;
+      }
+
+      const newPlace = {
+        id: "custom_" + Date.now(),
+        city,
+        icon,
+        titleEn: title,
+        titleHi: title,
+        titleMr: title,
+        address,
+        lat,
+        lng,
+        tag: "Family Saved",
+        keywords: [title.toLowerCase()]
+      };
+
+      state.places.unshift(newPlace);
+      state.selectedDropId = newPlace.id;
+      savePlacesToStorage();
+      renderPickupOptions();
+      renderDestinationCards();
+      renderManagePlacesList();
+      updateCabDeepLinks();
+      closePlaceModal();
+      showToast(`Saved "${title}" to Family Places!`);
+    }
+
+    function deleteSavedPlace(id) {
+      if (state.places.length <= 1) {
+        showToast("Keep at least one saved destination.");
+        return;
+      }
+      state.places = state.places.filter(p => p.id !== id);
+      if (state.selectedDropId === id) {
+        state.selectedDropId = state.places[0].id;
+      }
+      savePlacesToStorage();
+      renderPickupOptions();
+      renderDestinationCards();
+      renderManagePlacesList();
+      updateCabDeepLinks();
+      showToast("Removed place.");
+    }
+
+    function resetDefaultPlaces() {
+      state.places = JSON.parse(JSON.stringify(DEFAULT_PLACES));
+      state.selectedDropId = "oms_house_dahisar";
+      savePlacesToStorage();
+      renderPickupOptions();
+      renderDestinationCards();
+      renderManagePlacesList();
+      updateCabDeepLinks();
+      showToast("Restored default Mumbai & Goa family places!");
+    }
+
+    function startVoiceDictation(inputId) {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRec) {
+        showToast("Voice dictation not supported in this browser. Please type the name or tap a saved card.");
+        return;
+      }
+      const rec = new SpeechRec();
+      rec.lang = state.lang === "hi" ? "hi-IN" : state.lang === "mr" ? "mr-IN" : "en-IN";
+      showToast("Listening... Speak the destination name now.");
+      rec.onresult = evt => {
+        const transcript = evt.results[0][0].transcript;
+        const inputEl = document.getElementById(inputId);
+        if (inputEl) {
+          inputEl.value = transcript;
+          handleCustomDestinationInput(transcript);
+          showToast(`Heard: "${transcript}"`);
+        }
+      };
+      rec.start();
+    }
+
+    // =====================================================
+    // EMERGENCY / LIVE LOCATION SHARE TO OM
+    // =====================================================
+    function sendLiveLocationToOm() {
+      const tr = FAMILY_TRAVELERS.find(t => t.id === state.selectedTravelerId) || FAMILY_TRAVELERS[0];
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          pos => {
+            const lat = pos.coords.latitude.toFixed(5);
+            const lng = pos.coords.longitude.toFixed(5);
+            const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+            const msg = `📍 *Live Location from ${tr.nameEn}*\nOm, I am here right now and need help with travel/cab:\n${mapsUrl}`;
+            window.open(`https://wa.me/${OM_PHONE}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
+          },
+          () => {
+            const msg = `📍 *Help Request from ${tr.nameEn}*\nOm, please call me or help me book a ride.`;
+            window.open(`https://wa.me/${OM_PHONE}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
+          },
+          { timeout: 4000 }
+        );
+      } else {
+        const msg = `📍 *Help Request from ${tr.nameEn}*\nOm, please help me book a ride.`;
+        window.open(`https://wa.me/${OM_PHONE}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
+      }
+    }
+
+    function recordAction(msg) {
+      showToast(msg);
+    }
+
+    function showToast(msg) {
+      const banner = document.getElementById("toastBanner");
+      const text = document.getElementById("toastMessage");
+      if (banner && text) {
+        text.textContent = msg;
+        banner.classList.remove("hidden");
+      }
+    }
+
+    function hideToast() {
+      const banner = document.getElementById("toastBanner");
+      if (banner) banner.classList.add("hidden");
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      loadPlacesFromStorage();
+      initDefaultDates();
+      renderTravelerPills();
+      renderPickupOptions();
+      renderDestinationCards();
+      renderTrainDirectory();
+      updateCabDeepLinks();
+      updateTrainLinks();
+      updateFlightLinks();
+    });
+  </script>
+</body>
+</html>
